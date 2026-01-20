@@ -1,26 +1,22 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Al poner --color-*, Tailwind 4 crea automáticamente las clases */
+  --color-venezuela-blue: #00244C;
+  --color-venezuela-gold: #FDBF00;
+  --color-venezuela-red: #CF142B;
+  --color-surface-light: #F8FAFC;
+  
+  /* Color de fondo base */
+  background-color: var(--color-surface-light);
+}
+@keyframes waveDance {
+  0% { transform: scaleY(0.4); }
+  50% { transform: scaleY(1); }
+  100% { transform: scaleY(0.4); }
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.animate-wave {
+  animation: waveDance 0.8s ease-in-out infinite;
+  transform-origin: bottom;
 }
