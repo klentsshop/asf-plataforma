@@ -263,7 +263,7 @@ export default function AbogadoDashboard() {
             <div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6 italic pl-4">Menú de Gestión</p>
               <nav className="space-y-2">
-                <NavItem onClick={() => setVista("bandeja")} icon={<Clock size={18}/>} label="Bolsa de Casos" active={vista === "bandeja"} />
+                <NavItem onClick={() => setVista("bandeja")} icon={<Clock size={18}/>} label="Casos" active={vista === "bandeja"} />
                 <NavItem onClick={() => setVista("clientes")} icon={<Users size={18}/>} label="Mis Clientes" active={vista === "clientes"} />
                 <NavItem onClick={() => setVista("expedientes")} icon={<FileText size={18}/>} label="Expedientes" active={vista === "expedientes"} />
                 <NavItem onClick={() => setVista("seguridad")} icon={<KeyRound size={18}/>} label="Seguridad" active={vista === "seguridad"} />
