@@ -20,7 +20,7 @@ export default function RegistroAbogado() {
   
   const ramasLegales = [
     { title: '🏡 Propiedades', value: 'propiedades' },
-    { title: '👨‍👩‍👧‍👦 Familia', value: 'familia' },
+    { title: '👨‍👩‍👧‍👦 Familias', value: 'familias' },
     { title: '💼 Negocios', value: 'negocios' },
     { title: '⚖️ Penal', value: 'penal' },
     { title: '📄 Gestiones', value: 'gestiones' },

@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     const data = await resend.emails.send({
-      from: 'Abogados Sin Fronteras <acceso@tuabogadoencasa.com>', // Asegúrate de que este dominio esté verificado en Resend
+      from: 'gestion@klentsshop.com', // Asegúrate de que este dominio esté verificado en Resend
       to: [email],
       subject: `⚖️ Acceso Concedido: Bienvenido a la Red ASF`,
       html: `

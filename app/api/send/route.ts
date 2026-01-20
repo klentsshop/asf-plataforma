@@ -59,7 +59,7 @@ export async function POST(request: Request) {
                     </ul>
 
                     <div style="margin-top: 30px; text-align: center;">
-                      <a href="https://klentsshop.com/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase;">Entrar a mi Bóveda</a>
+                      <a href="https://abogadosinfrnteras.netlify.app/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase;">Entrar a mi Bóveda</a>
                     </div>
                   </td>
                 </tr>

@@ -50,6 +50,9 @@ export default function Page() {
     codigoExpediente: null,
   });
 
+  // *** NUEVO: ESTADO DEL MENÚ MÓVIL ***
+  const [menuMovil, setMenuMovil] = useState(false);
+
   // 1. INTEGRACIÓN DE NOTIFICACIONES (Polling activo a Sanity)
   useExpedienteNotifs(setNotificacion);
 
@@ -80,38 +83,17 @@ export default function Page() {
   };
 
   const finalizarRegistroOficial = async () => {
-    // 1. Recuperación de ID con respaldo de seguridad
     const casoId = casoIdGenerado || localStorage.getItem("asf_caso_id") || "";
     if (!casoId) return alert("Error: No se detectó un ID de expediente activo.");
-    
-    // 2. Validación de campos obligatorios
     if (!seleccion.nombre || !seleccion.email || !seleccion.cedula) {
       return alert("Por favor, complete su nombre, cédula y correo electrónico.");
     }
-
     setCargando(true);
 
     try {
-      // 3. Intento de registro con validación de unicidad en Sanity
       const res = await registrarYVincularCliente(casoId, seleccion);
-      
-      // 🚨 MANEJO DE DUPLICADOS (Blindaje Legal)
-      if (!res.success && res.errorType === "UNICIDAD") {
-        const msj = res.mensajes?.map((m: string) => 
-          m === "CEDULA_DUPLICADA" 
-            ? "• Esta cédula ya está registrada en nuestro sistema." 
-            : "• Este correo electrónico ya está vinculado a otro expediente."
-        ).join("\n");
-        
-        setCargando(false);
-        return alert(`ATENCIÓN JURÍDICA:\n\n${msj}\n\nPor favor, verifique sus datos o contacte a soporte.`);
-      }
+      if (!res.success) throw new Error("Error técnico al vincular el cliente.");
 
-      if (!res.success) {
-        throw new Error("Error técnico al vincular el cliente.");
-      }
-
-      // 4. Envío de Correo vía API Send (Resend)
       await fetch("/api/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,7 +105,6 @@ export default function Page() {
         }),
       });
 
-      // 5. Limpieza de seguridad y éxito
       localStorage.removeItem("asf_caso_id");
       navegarPaso(6);
 
@@ -150,24 +131,47 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-[#F3F4F6] flex flex-col font-sans selection:bg-[#D4AF37] relative overflow-x-hidden">
-      
-      {/* CAPA DE FONDO LUXURY RECUPERADA */}
+
       <div className="fixed inset-0 z-0 pointer-events-none">
-        {/* Dama de la Justicia (Imagen de Unsplash con filtros originales) */}
         <div 
           className="absolute inset-0 bg-no-repeat bg-center bg-contain opacity-20 grayscale contrast-125" 
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?q=80&w=2070')" }} 
         />
-        {/* Cuadrícula Dorada Sutil */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#d4af3710_1px,transparent_1px),linear-gradient(to_bottom,#d4af3710_1px,transparent_1px)] bg-[size:45px_45px]" />
       </div>
 
-      {/* CONTENIDO PRINCIPAL SOBRE EL FONDO */}
       <div className="relative z-10 flex flex-col min-h-screen text-center">
-        <NavbarWizard notificacion={notificacion} navegarPaso={navegarPaso} />
+        {/* NAV */}
+        <NavbarWizard 
+          notificacion={notificacion} 
+          navegarPaso={navegarPaso} 
+          setMenuMovil={setMenuMovil} 
+          menuMovil={menuMovil}
+        />
+        {/* *** MENÚ MÓVIL DESPLEGADO *** */}
+        {menuMovil && (
+          <div className="lg:hidden bg-[#1a1a1a] border-b-4 border-[#D4AF37] px-4 py-3 space-y-2 z-30">
+            <button
+              onClick={() => { router.push("/boveda"); setMenuMovil(false); }}
+              className="w-full py-2 bg-[#D4AF37] text-[#1a1a1a] rounded-xl text-xs font-black uppercase tracking-widest italic"
+            >
+              MI BÓVEDA
+            </button>
+            <button
+              onClick={() => { router.push("/login-abogado"); setMenuMovil(false); }}
+              className="w-full py-2 bg-[#D4AF37] text-[#1a1a1a] rounded-xl text-xs font-black uppercase tracking-widest italic"
+            >
+              SOY ABOGADO
+            </button>
+          </div>
+        )}
+
+
+        {/* HEADER */}
         <HeaderWizard paso={paso} isPending={isPending} navegarPaso={navegarPaso} />
 
-        {/* Sección de Pasos con margen negativo para el efecto Luxury */}
+        
+        {/* CONTENIDO PRINCIPAL */}
         <section className="flex-1 px-8 -mt-10 pb-20 flex justify-center items-start z-20">
           <div className="container mx-auto flex flex-col items-center">
             {paso === 1 && <Paso1Categoria {...commonProps} />}

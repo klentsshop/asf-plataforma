@@ -9,7 +9,7 @@ export async function POST(request: Request) {
     const { email, nombre, inpre, ubicacion } = await request.json();
 
     const data = await resend.emails.send({
-      from: 'Abogados Sin Fronteras <postulaciones@tu-dominio.com>',
+      from: 'gestion@klentsshop.com',
       to: [email],
       subject: `Postulación Recibida: Abg. ${nombre}`,
       html: `

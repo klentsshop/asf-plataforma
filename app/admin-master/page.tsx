@@ -68,18 +68,39 @@ export default function AdminMaster() {
   };
 
   const aprobarAbogado = async (id: string, email: string, nombre: string) => {
-    const claveTemporal = Math.random().toString(36).slice(-8);
-    try {
-      await client.patch(id).set({ estatus: 'aprobado', password: claveTemporal }).commit();
-      await fetch('/api/aprobacion-abogado', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, nombre, password: claveTemporal })
-      });
-      alert(`Aprobado. Credenciales enviadas.`);
-      cargarDataMaestra();
-    } catch (e) { alert("Error en aprobación."); }
-  };
+  const claveTemporal = Math.random().toString(36).slice(-8);
+
+  try {
+    // 1️⃣ Actualizamos en Sanity
+    await client.patch(id).set({ 
+      estatus: 'aprobado', 
+      password: claveTemporal 
+    }).commit();
+
+    // 2️⃣ Disparamos correo seguro
+    const resp = await fetch('/api/aprobacion-abogado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, nombre, password: claveTemporal })
+    });
+
+    const data = await resp.json();
+
+    // 3️⃣ Validación explícita del envío
+    if (!data?.success) {
+      alert("⚠ Se aprobó correctamente, pero hubo un error enviando las credenciales. Por favor reintente el envío.");
+      return;
+    }
+
+    // 4️⃣ Flujo normal
+    alert("✔ Aprobado. Credenciales enviadas exitosamente.");
+    cargarDataMaestra();
+
+  } catch (e) {
+    console.error("Error en aprobarAbogado:", e);
+    alert("❌ Error técnico en la aprobación.");
+  }
+};
 
   const validarPago = async (id: string) => {
     const confirmacion = confirm("¿Confirma que el depósito ha sido verificado en la cuenta ASF?");
@@ -109,7 +130,24 @@ export default function AdminMaster() {
   return (
     <main className="min-h-screen bg-[#F3F4F6] text-slate-800 p-8 font-sans selection:bg-[#D4AF37]">
       
-      <header className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-16 bg-white p-10 rounded-full shadow-2xl border-4 border-[#D4AF37] relative overflow-hidden">
+      <header className="
+    max-w-7xl mx-auto
+    flex flex-col md:flex-row
+    justify-between items-start md:items-center
+
+    mb-16
+    bg-white
+
+    /* MOBILE */
+    p-4 rounded-xl border-2
+
+    /* DESKTOP */
+    md:p-10 md:rounded-full md:border-4
+
+    shadow-2xl border-[#D4AF37]
+    relative overflow-hidden
+  "
+>
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl" />
         <div className="flex items-center gap-8 text-left relative z-10">
           <button onClick={() => window.location.href = '/'} className="p-5 bg-[#1a1a1a] text-[#D4AF37] border-2 border-white rounded-full hover:scale-110 transition-all shadow-xl">
