@@ -15,7 +15,7 @@ export function Paso2Estado({ seleccion, setSeleccion, navegarPaso }: PasoProps)
               key={e}
               onClick={() => {
                 setSeleccion({ ...seleccion, ubicacion: e });
-                navegarPaso(3);
+                navegarPaso(4);
               }}
               className="p-3 bg-white border-2 border-slate-200 rounded-xl font-bold text-slate-600 hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all text-[10px] uppercase tracking-widest min-h-[50px] flex items-center justify-center shadow-sm hover:shadow-md"
             >

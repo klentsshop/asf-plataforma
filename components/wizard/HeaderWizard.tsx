@@ -39,10 +39,14 @@ export function HeaderWizard({ paso, isPending, navegarPaso }: any) {
           </div>
         )}
 
-        {/* BOTÓN VOLVER */}
+        {/* BOTÓN VOLVER - LÓGICA CORREGIDA PARA SALTAR EL PASO 3 */}
         {(paso > 1 && paso < 5) || paso === 7 ? (
           <button 
-            onClick={() => navegarPaso(paso === 7 ? 1 : paso - 1)} 
+            onClick={() => {
+              if (paso === 7) return navegarPaso(1);
+              if (paso === 4) return navegarPaso(2); // Evita el paso 3 borrado
+              navegarPaso(paso - 1);
+            }} 
             className="mt-4 text-[#D4AF37] text-xs font-black flex items-center justify-center gap-2 mx-auto uppercase tracking-widest hover:opacity-70 transition"
           >
             {isPending ? <Loader2 className="animate-spin w-4 h-4" /> : <ChevronLeft size={16} />} Volver

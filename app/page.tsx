@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 // Acciones y constantes
 import { crearCasoAnonimo, registrarYVincularCliente } from "../sanity/lib/actions";
 import { estadosVenezuela, serviceCardsData } from "./lib/constants";
+import { client } from "../sanity/lib/client";
 
 // Tipados oficiales
 import { NotificacionCaso, SeleccionCaso } from "./flows/expediente/expediente.types";
@@ -14,7 +15,6 @@ import { NotificacionCaso, SeleccionCaso } from "./flows/expediente/expediente.t
 // Importación de Pasos
 import { Paso1Categoria } from "./flows/expediente/pasos/Paso1Categoria";
 import { Paso2Estado } from "./flows/expediente/pasos/Paso2Estado";
-import { Paso3Documentos } from "./flows/expediente/pasos/Paso3Documentos";
 import { Paso4Situacion } from "./flows/expediente/pasos/Paso4Situacion";
 import { Paso5Solicitud } from "./flows/expediente/pasos/Paso5Solicitud";
 import { Paso6Expediente } from "./flows/expediente/pasos/Paso6Expediente";
@@ -24,6 +24,7 @@ import { Paso8Registro } from "./flows/expediente/pasos/Paso8Registro";
 // Layout y Navbar
 import { HeaderWizard } from "@/components/wizard/HeaderWizard";
 import { NavbarWizard } from "@/components/wizard/NavbarWizard";
+import { ReviewsFooter } from "@/components/ReviewsFooter";
 
 // IMPORTACIÓN DE HOOKS FUNCIONALES
 import { useExpedienteAudio } from "./flows/expediente/useExpedienteAudio";
@@ -37,6 +38,9 @@ export default function Page() {
   const [grabando, setGrabando] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [casoIdGenerado, setCasoIdGenerado] = useState<string | null>(null);
+  
+  // ESTADO PARA RESEÑAS PÚBLICAS
+  const [reviews, setReviews] = useState<any[]>([]);
 
   const [seleccion, setSeleccion] = useState<SeleccionCaso>({
     categoria: "", ubicacion: "", tieneDocumentos: "", descripcion: "",
@@ -65,6 +69,23 @@ export default function Page() {
 
   useEffect(() => {
     setIsClient(true);
+    
+    // CARGAR RESEÑAS PARA EL FOOTER
+    const fetchReviews = async () => {
+      try {
+        const data = await client.fetch(`
+          *[_type == "caso" && estado == "concluido" && defined(rating)] | order(_updatedAt desc) [0...3] {
+            rating,
+            resenaTexto,
+            "clienteNombre": cliente->nombre
+          }
+        `);
+        setReviews(data);
+      } catch (error) {
+        console.error("Error cargando reseñas:", error);
+      }
+    };
+    fetchReviews();
   }, []);
 
   const navegarPaso = (p: number) => { if (!cargando) setPaso(p); };
@@ -172,11 +193,10 @@ export default function Page() {
 
         
         {/* CONTENIDO PRINCIPAL */}
-        <section className="flex-1 px-8 -mt-10 pb-20 flex justify-center items-start z-20">
+        <section className="flex-1 px-8 -mt-10 pb-0 flex justify-center items-start z-20">
           <div className="container mx-auto flex flex-col items-center">
             {paso === 1 && <Paso1Categoria {...commonProps} />}
             {paso === 2 && <Paso2Estado {...commonProps} />}
-            {paso === 3 && <Paso3Documentos {...commonProps} />}
             {paso === 4 && (
               <Paso4Situacion 
                 {...commonProps} 
@@ -196,6 +216,9 @@ export default function Page() {
             )}
           </div>
         </section>
+
+        {/* COMPONENTE DE RESEÑAS DINÁMICAS */}
+        <ReviewsFooter reviews={reviews} />
 
         <footer className="bg-[#1a1a1a] py-12 border-t-4 border-[#D4AF37] text-center relative z-30">
           <p className="text-slate-500 text-[9px] font-black uppercase italic tracking-[0.5em]">

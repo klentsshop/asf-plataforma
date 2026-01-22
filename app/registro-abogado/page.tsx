@@ -22,9 +22,9 @@ export default function RegistroAbogado() {
     { title: '🏡 Propiedades', value: 'propiedades' },
     { title: '👨‍👩‍👧‍👦 Familias', value: 'familias' },
     { title: '💼 Negocios', value: 'negocios' },
-    { title: '⚖️ Penal', value: 'penal' },
+    { title: '⚖️ Defensas', value: 'penal' },
     { title: '📄 Gestiones', value: 'gestiones' },
-    { title: '⚖️ Global', value: 'global' },
+    { title: '⚖️ Exclusivos', value: 'global' },
   ];
 
   const estadosVenezuela = [

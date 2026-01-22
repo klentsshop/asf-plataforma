@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react"; // Añadido useRef para persistencia de datos
 import { 
   ShieldCheck, Users, DollarSign, AlertCircle, 
   CheckCircle2, XCircle, Eye, Loader2, Scale, 
   FileText, ArrowRight, ExternalLink, ChevronLeft, TrendingUp,
-  UserCheck
+  UserCheck, RefreshCw, Bell // Añadidos iconos para el refresh
 } from "lucide-react";
 import { client } from "@/sanity/lib/client";
 
@@ -13,13 +13,19 @@ export default function AdminMaster() {
   const [abogadosPendientes, setAbogadosPendientes] = useState<any[]>([]);
   const [pagosPendientes, setPagosPendientes] = useState<any[]>([]);
   const [casosHuerfanos, setCasosHuerfanos] = useState<any[]>([]);
-  const [abogadosAprobados, setAbogadosAprobados] = useState<any[]>([]); // 🔥 Para el Selector Maestro
+  const [abogadosAprobados, setAbogadosAprobados] = useState<any[]>([]); 
   const [cargando, setCargando] = useState(true);
-  const [casoEnMatch, setCasoEnMatch] = useState<string | null>(null); // Estado para abrir el selector manual
+  const [casoEnMatch, setCasoEnMatch] = useState<string | null>(null);
 
-  const cargarDataMaestra = async () => {
+  // --- NUEVOS ESTADOS PARA EL REFRESH ---
+  const [segundos, setSegundos] = useState(60);
+  const totalAnterior = useRef(0); // Para comparar si hay nuevos casos y sonar la campana
+
+  const cargarDataMaestra = async (isAutoRefresh = false) => {
     try {
-      setCargando(true);
+      // Solo mostramos el loader principal en la primera carga
+      if (!isAutoRefresh) setCargando(true);
+
       const abogQuery = `*[_type == "abogado" && estatus == "pendiente"] | order(_createdAt desc){
         ..., "inpreUrl": pdfInpreabogado.asset->url
       }`;
@@ -36,6 +42,14 @@ export default function AdminMaster() {
         client.fetch(aprobadosQuery)
       ]);
 
+      // Lógica de sonido: Si la suma de pendientes es mayor que antes, suena la campana
+      const nuevoTotal = abog.length + pagos.length + huerfanos.length;
+      if (isAutoRefresh && nuevoTotal > totalAnterior.current) {
+        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+        audio.play().catch(e => console.log("Interacción requerida para audio"));
+      }
+      totalAnterior.current = nuevoTotal;
+
       setAbogadosPendientes(abog);
       setPagosPendientes(pagos);
       setCasosHuerfanos(huerfanos);
@@ -47,7 +61,22 @@ export default function AdminMaster() {
     }
   };
 
-  useEffect(() => { cargarDataMaestra(); }, []);
+  // --- CICLO DE VIDA DEL REFRESH ---
+  useEffect(() => {
+    cargarDataMaestra();
+
+    const intervaloRefresco = setInterval(() => {
+      setSegundos((prev) => {
+        if (prev <= 1) {
+          cargarDataMaestra(true);
+          return 60;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(intervaloRefresco);
+  }, []);
 
   const asignarManual = async (casoId: string, abogadoId: string, abogadoNombre: string) => {
     const confirmar = confirm(`¿Asignar este caso oficialmente al Abg. ${abogadoNombre}?`);
@@ -71,13 +100,11 @@ export default function AdminMaster() {
   const claveTemporal = Math.random().toString(36).slice(-8);
 
   try {
-    // 1️⃣ Actualizamos en Sanity
     await client.patch(id).set({ 
       estatus: 'aprobado', 
       password: claveTemporal 
     }).commit();
 
-    // 2️⃣ Disparamos correo seguro
     const resp = await fetch('/api/aprobacion-abogado', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -86,13 +113,11 @@ export default function AdminMaster() {
 
     const data = await resp.json();
 
-    // 3️⃣ Validación explícita del envío
     if (!data?.success) {
       alert("⚠ Se aprobó correctamente, pero hubo un error enviando las credenciales. Por favor reintente el envío.");
       return;
     }
 
-    // 4️⃣ Flujo normal
     alert("✔ Aprobado. Credenciales enviadas exitosamente.");
     cargarDataMaestra();
 
@@ -142,7 +167,7 @@ export default function AdminMaster() {
     p-4 rounded-xl border-2
 
     /* DESKTOP */
-    md:p-10 md:rounded-full md:border-4
+    p-6 md:p-10 md:rounded-full md:border-4
 
     shadow-2xl border-[#D4AF37]
     relative overflow-hidden
@@ -155,14 +180,21 @@ export default function AdminMaster() {
           </button>
           <div className="text-left">
             <h1 className="text-4xl font-black uppercase italic tracking-tighter text-[#1a1a1a] leading-none">Master <span className="text-[#D4AF37]">Control</span></h1>
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] mt-3 italic">Gestión de Bóveda Central • Protocolo ASF</p>
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] mt-3 italic flex items-center gap-2">
+              <RefreshCw size={10} className={`animate-spin ${segundos < 5 ? 'text-[#D4AF37]' : ''}`} />
+              Sincronización en {segundos}s
+            </p>
           </div>
         </div>
-        <div className="mt-8 md:mt-0 bg-[#1a1a1a] px-10 py-6 rounded-full border-4 border-[#D4AF37]/30 flex items-center gap-6 shadow-2xl">
-          <div className="bg-[#D4AF37] p-3 rounded-full text-[#1a1a1a] border-2 border-white shadow-lg"><Scale size={24}/></div>
-          <div className="text-left">
-            <p className="text-[10px] font-black text-[#D4AF37] uppercase italic tracking-widest leading-none mb-1">Total Pendientes</p>
-            <p className="text-3xl font-black text-white leading-none italic">{casosHuerfanos.length + pagosPendientes.length}</p>
+
+        {/* CONTADORES */}
+        <div className="flex flex-wrap gap-4 mt-6 md:mt-0">
+          <div className="bg-[#1a1a1a] px-8 py-4 rounded-full border-4 border-[#D4AF37]/30 flex items-center gap-4 shadow-2xl">
+            <div className="bg-[#D4AF37] p-2 rounded-full text-[#1a1a1a] border-2 border-white"><Bell size={18} className={segundos < 3 ? 'animate-bounce' : ''}/></div>
+            <div className="text-left">
+              <p className="text-[8px] font-black text-[#D4AF37] uppercase italic leading-none mb-1">Total Pendientes</p>
+              <p className="text-2xl font-black text-white leading-none italic">{casosHuerfanos.length + pagosPendientes.length}</p>
+            </div>
           </div>
         </div>
       </header>
@@ -248,7 +280,6 @@ export default function AdminMaster() {
                 </div>
                 
                 {casoEnMatch === caso._id ? (
-                  /* SELECTOR DE ABOGADOS ACTIVADO */
                   <div className="space-y-4 animate-in slide-in-from-top-4">
                     <p className="text-[9px] font-black text-[#D4AF37] uppercase tracking-widest italic mb-2">Seleccione Abogado para Asignar:</p>
                     <div className="max-h-64 overflow-y-auto pr-2 space-y-2 custom-scrollbar">
@@ -266,7 +297,6 @@ export default function AdminMaster() {
                     <button onClick={() => setCasoEnMatch(null)} className="w-full text-[8px] font-black text-red-400 uppercase tracking-widest py-2">Cancelar</button>
                   </div>
                 ) : (
-                  /* VISTA NORMAL DEL CASO */
                   <>
                     <div className="bg-[#F9FAFB] border-4 border-slate-50 p-10 rounded-[3rem] shadow-inner text-left">
                       <p className="text-xs text-slate-600 italic font-bold leading-relaxed truncate-2-lines">"{caso.description || caso.descripcion}"</p>

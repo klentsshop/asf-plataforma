@@ -50,9 +50,9 @@ export const caso = defineType({
           { title: '🏡 Propiedades', value: 'propiedades' },
           { title: '👨‍👩‍👧‍👦 Familias', value: 'familias' },
           { title: '💼 Negocios', value: 'negocios' },
-          { title: '⚖️ Penal', value: 'penal' },
+          { title: '⚖️ Defensas', value: 'penal' },
           { title: '📄 Gestiones', value: 'gestiones' },
-          { title: '⚖️ Global', value: 'global' },
+          { title: '⚖️ Exclusivos', value: 'global' },
         ],
       },
       validation: (Rule) => Rule.required(),
@@ -176,6 +176,14 @@ export const caso = defineType({
       type: 'text',
       initialValue: 'Hemos recibido su expediente con éxito. Un abogado especialista está revisando los detalles.',
     }),
+    
+    defineField({
+      name: 'mensajeCliente',
+      title: 'Respuesta del Cliente (Bóveda)',
+      description: 'Último mensaje técnico enviado por el cliente desde su bóveda privada.',
+      type: 'text',
+      rows: 3,
+    }),
 
     defineField({
       name: 'documentosBoveda',
@@ -205,6 +213,20 @@ export const caso = defineType({
           ]
         }
       ],
+    }),
+    defineField({
+      name: 'rating',
+      title: 'Calificación (Estrellas)',
+      type: 'number',
+      description: 'Puntuación del cliente de 1 a 5',
+      validation: (Rule) => Rule.min(1).max(5),
+    }),
+
+    defineField({
+      name: 'resenaTexto',
+      title: 'Comentario de la Reseña',
+      type: 'text',
+      description: 'Breve comentario sobre la experiencia con ASF',
     }),
 
     defineField({
