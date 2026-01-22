@@ -74,7 +74,7 @@ export function BovedaLogin({
         </div>
 
         <p className="mt-10 text-[9px] text-slate-400 font-bold uppercase italic tracking-widest leading-relaxed text-center">
-          Abogados Sin Fronteras • Conexión Segura TLS 1.3
+          Tu Abogado Sin Fronteras • Conexión Segura TLS 1.3
         </p>
       </div>
     </main>

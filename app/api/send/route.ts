@@ -22,7 +22,7 @@ export async function POST(request: Request) {
       // **IMPORTANTE: dominio verificado**
       from: 'gestion@klentsshop.com',
       // si quieres el nombre, debe ir así:
-      // from: 'Abogados Sin Fronteras <gestion@klentsshop.com>',
+      // from: 'Tu Abogado Sin Fronteras <gestion@klentsshop.com>',
       to: email,
       subject: `Expediente Oficial ASF: ${displayID}`,
       html: `
@@ -65,7 +65,7 @@ export async function POST(request: Request) {
                 </tr>
                 <tr>
                   <td align="center" style="padding: 25px; background-color: #111; border-top: 1px solid #333;">
-                    <p style="color: #666; font-size: 10px; margin: 0;">© 2026 Abogados Sin Fronteras Venezuela</p>
+                    <p style="color: #666; font-size: 10px; margin: 0;">© 2026 Tu Abogado Sin Fronteras Venezuela</p>
                     <p style="color: #444; font-size: 8px; margin-top: 5px; text-transform: uppercase;">ID Interno: ${casoId}</p>
                   </td>
                 </tr>

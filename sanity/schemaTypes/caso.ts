@@ -250,7 +250,7 @@ export const caso = defineType({
               name: 'emisor', 
               type: 'string', 
               title: 'Emisor',
-              options: { list: ['Abogado', 'Plataforma', 'Abogados Sin Fronteras'] },
+              options: { list: ['Abogado', 'Plataforma', 'Tu Abogado Sin Fronteras'] },
               initialValue: 'Plataforma'
             }
           ]

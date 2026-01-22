@@ -176,7 +176,7 @@ export default function LoginAbogado() {
       </div>
       
       <p className="text-center text-[9px] text-slate-400 font-black uppercase tracking-[0.4em] mt-12 italic opacity-60">
-        Abogados Sin Fronteras Venezuela • 2026
+        Tu Abogado Sin Fronteras Venezuela • 2026
       </p>
     </main>
   );

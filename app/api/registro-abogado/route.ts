@@ -27,7 +27,7 @@ export async function POST(request: Request) {
                   <td style="padding: 40px;">
                     <p style="color: #ffffff; font-size: 16px;">Estimado(a) <strong>Abg. ${nombre}</strong>,</p>
                     <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
-                      Hemos recibido su solicitud de ingreso a la red de <strong>Abogados Sin Fronteras Venezuela</strong> para el estado <strong>${ubicacion}</strong>. Sus credenciales bajo el número de INPRE <strong>${inpre}</strong> han sido enviadas al departamento de auditoría legal.
+                      Hemos recibido su solicitud de ingreso a la red de <strong>Tu Abogado Sin Fronteras Venezuela</strong> para el estado <strong>${ubicacion}</strong>. Sus credenciales bajo el número de INPRE <strong>${inpre}</strong> han sido enviadas al departamento de auditoría legal.
                     </p>
                     
                     <div style="margin: 30px 0; padding: 20px; border-left: 3px solid #D4AF37; background-color: #1d1d1d;">
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
                 </tr>
                 <tr>
                   <td align="center" style="padding: 20px; background-color: #0d0d0d; border-top: 1px solid #222222;">
-                    <p style="color: #444444; font-size: 9px; margin: 0;">© 2026 Abogados Sin Fronteras. Sistema de Seguridad Profesional.</p>
+                    <p style="color: #444444; font-size: 9px; margin: 0;">© 2026 Tu Abogado Sin Fronteras. Sistema de Seguridad Profesional.</p>
                   </td>
                 </tr>
               </table>

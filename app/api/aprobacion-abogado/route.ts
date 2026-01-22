@@ -38,7 +38,7 @@ export async function POST(request: Request) {
                   <td style="padding: 40px;">
                     <p style="color: #ffffff; font-size: 18px; margin-bottom: 20px;">Bienvenido al Panel de Especialistas, <strong>Abg. ${nombre}</strong></p>
                     <p style="color: #888888; font-size: 14px; line-height: 1.7; margin-bottom: 30px;">
-                      Sus credenciales han sido verificadas exitosamente por la dirección legal. A partir de este momento, usted tiene acceso a los casos activos disponibles de <strong>Abogados Sin Fronteras</strong>.
+                      Sus credenciales han sido verificadas exitosamente por la dirección legal. A partir de este momento, usted tiene acceso a los casos activos disponibles de <strong>Tu Abogado Sin Fronteras</strong>.
                     </p>
                     
                     <div style="background-color: #000000; border: 1px solid #333333; border-radius: 15px; padding: 25px; margin-bottom: 30px;">

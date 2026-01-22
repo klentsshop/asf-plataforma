@@ -53,7 +53,7 @@ export async function POST(request: Request) {
                 </tr>
                 <tr>
                   <td align="center" style="padding: 20px; background-color: #111;">
-                    <p style="color: #666; font-size: 9px; margin: 0;">© 2026 Abogados Sin Fronteras • Conexión TLS 1.3</p>
+                    <p style="color: #666; font-size: 9px; margin: 0;">© 2026 Tu Abogado Sin Fronteras • Conexión TLS 1.3</p>
                   </td>
                 </tr>
               </table>

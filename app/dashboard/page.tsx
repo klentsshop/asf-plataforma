@@ -135,7 +135,6 @@ export default function AbogadoDashboard() {
   const enviarActualizacionYPrecio = async () => {
     if (!mensajeLegal) return alert("Falta el reporte técnico");
     
-    // VALIDACIÓN DE SEGURIDAD (ANTI-CONTACTO EXTERNO)
     const { isSafe } = filterSensitiveInfo(mensajeLegal);
     if (!isSafe) {
       return alert("⚠️ REGLA DE SEGURIDAD: No se permiten teléfonos o correos en el muro de gestión.");
@@ -164,9 +163,8 @@ export default function AbogadoDashboard() {
       setCargando(false);
     }
   };
+
   const concluirCasoLegal = async () => {
-    // La doble confirmación ya la hace el componente hijo, 
-    // pero dejamos esta por seguridad si se llegara a disparar desde aquí
     if (!confirm("¿Está seguro de marcar este caso como CONCLUIDO? Esto habilitará la encuesta de satisfacción para el cliente.")) return;
 
     setCargando(true);
@@ -176,12 +174,8 @@ export default function AbogadoDashboard() {
         .set({ estado: 'concluido' }) 
         .commit();
 
-      // ESTA ES LA LÍNEA CLAVE: Actualiza la UI del abogado al instante
       setCasoSeleccionado(res); 
-
       alert("⚖️ Expediente finalizado exitosamente.");
-      
-      // Opcional: Después del éxito, lo mandamos a ver sus casos concluidos
       setVista("expedientes");
       
     } catch (error) {
@@ -197,18 +191,27 @@ export default function AbogadoDashboard() {
     window.location.replace("/login-abogado");
   };
 
-  // ---- 4. RENDERIZADO PRINCIPAL ----
+  // ---- 4. RENDERIZADO PRINCIPAL (MEJORADO PARA MÓVIL) ----
   return (
-    <main className="min-h-screen flex flex-col bg-[#F3F4F6]">
+    <main className="min-h-screen flex flex-col bg-[#F3F4F6] overflow-x-hidden">
       {/* NAVEGACIÓN SUPERIOR */}
       <Navbar abogadoInfo={abogadoInfo} setVista={setVista} cerrarSesion={cerrarSesion} />
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* BARRA LATERAL */}
-        <Sidebar vista={vista} setVista={setVista} />
+      {/* CONTENEDOR FLEXIBLE: Cambia de Columna (móvil) a Fila (escritorio) */}
+      <div className="flex flex-col lg:flex-row flex-1 overflow-hidden">
+        
+        {/* BARRA LATERAL: 
+            En móvil se vuelve una barra de navegación superior/apilada.
+            En escritorio (lg:) recupera su ancho de 80 y altura completa.
+        */}
+        <div className="w-full lg:w-80 flex-shrink-0 bg-[#1a1a1a] border-b-4 lg:border-b-0 lg:border-r-4 border-[#D4AF37] z-20">
+          <Sidebar vista={vista} setVista={setVista} />
+        </div>
 
-        {/* ÁREA DE CONTENIDO DINÁMICO */}
-        <section className="flex-1 p-8 overflow-y-auto">
+        {/* ÁREA DE CONTENIDO DINÁMICO: 
+            Añadimos w-full y aseguramos que el scroll sea vertical.
+        */}
+        <section className="flex-1 w-full p-4 md:p-8 overflow-y-auto">
           {vista === "bandeja" && (
             <Bandeja cargando={cargando} casos={casos} manejarGestionar={manejarGestionar} />
           )}

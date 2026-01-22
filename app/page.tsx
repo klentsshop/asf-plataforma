@@ -222,7 +222,7 @@ export default function Page() {
 
         <footer className="bg-[#1a1a1a] py-12 border-t-4 border-[#D4AF37] text-center relative z-30">
           <p className="text-slate-500 text-[9px] font-black uppercase italic tracking-[0.5em]">
-            Abogados Sin Fronteras Venezuela • 2026
+            Tu Abogado Sin Fronteras Venezuela • 2026
           </p>
         </footer>
       </div>

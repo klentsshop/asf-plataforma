@@ -236,15 +236,21 @@ export default function RegistroAbogado() {
                 onChange={(e) => setArchivoInpre(e.target.files?.[0] || null)} 
               />
               {archivoInpre ? (
-                <>
-                  <ImageIcon className="text-emerald-500 animate-bounce" size={40} />
-                  <div className="text-center">
-                    <span className="block text-[11px] text-emerald-600 font-black uppercase tracking-widest">Documento Listo</span>
-                    <span className="block text-[9px] text-slate-400 font-bold">{archivoInpre.name}</span>
-                  </div>
-                  <button type="button" onClick={() => setArchivoInpre(null)} className="text-[10px] text-red-400 underline uppercase font-black hover:text-red-600">Cambiar archivo</button>
-                </>
-              ) : (
+  <>
+    <ImageIcon className="text-emerald-500 animate-bounce" size={40} />
+    <div className="text-center min-w-0 max-w-full px-4"> {/* Agregamos min-w-0 */}
+      <span className="block text-[11px] text-emerald-600 font-black uppercase tracking-widest">Documento Listo</span>
+      {/* CORRECCIÓN AQUÍ: 
+          - truncate: corta el texto con puntos suspensivos
+          - max-w-[200px]: evita que se estire más allá del ancho del celular
+      */}
+      <span className="block text-[9px] text-slate-400 font-bold truncate max-w-[180px] md:max-w-xs mx-auto">
+        {archivoInpre.name}
+      </span>
+    </div>
+    <button type="button" onClick={() => setArchivoInpre(null)} className="text-[10px] text-red-400 underline uppercase font-black hover:text-red-600">Cambiar archivo</button>
+  </>
+) : (
                 <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4 group">
                   <div className="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center text-[#D4AF37] shadow-xl border-4 border-[#D4AF37] group-hover:scale-110 transition-transform">
                     <FileUp size={28} />
@@ -274,7 +280,7 @@ export default function RegistroAbogado() {
           </button>
         </form>
       </div>
-      <p className="text-center text-[10px] text-slate-400 font-black uppercase tracking-[0.4em] mt-12 italic opacity-60">Abogados Sin Fronteras Venezuela • 2026</p>
+      <p className="text-center text-[10px] text-slate-400 font-black uppercase tracking-[0.4em] mt-12 italic opacity-60">Tu Abogado Sin Fronteras Venezuela • 2026</p>
     </main>
   );
 }
