@@ -1,7 +1,7 @@
 "use client";
 
 import { LogOut } from "lucide-react";
-// CORRECCIÓN DE RUTAS: Usamos "./" porque están en la misma carpeta cliente
+// CORRECCIÓN DE RUTAS
 import { BovedaNavbar } from "./BovedaNavbar";
 import { BovedaStatusBar } from "./BovedaStatusBar";
 import { BovedaLegal } from "./BovedaLegal";
@@ -13,13 +13,18 @@ type Props = {
   subiendoArchivo: boolean;
   manejarCargaArchivo: (e: any) => void;
   subirComprobante: (e: any) => void;
+  // NUEVAS PROPS NECESARIAS PARA EL DESPLIEGUE:
+  enviarMensajeAlAbogado: (mensaje: string) => Promise<void>;
+  enviarResenaFinal: (resena: { rating: number; resenaTexto: string }) => Promise<void>;
 };
 
 export function BovedaMain({
   datosCaso,
   subiendoArchivo,
   manejarCargaArchivo,
-  subirComprobante
+  subirComprobante,
+  enviarMensajeAlAbogado, // <--- Recibimos aquí
+  enviarResenaFinal      // <--- Recibimos aquí
 }: Props) {
   // Cálculo de lógica para la barra de estado
   const pasos = ['analisis', 'respondido', 'gestion', 'concluido'];
@@ -44,6 +49,9 @@ export function BovedaMain({
             subiendoArchivo={subiendoArchivo}
             subirComprobante={subirComprobante}
             indiceActual={indiceActual}
+            // INYECTAMOS LAS FUNCIONES FALTANTES AQUÍ:
+            enviarMensajeAlAbogado={enviarMensajeAlAbogado}
+            enviarResenaFinal={enviarResenaFinal}
           />
         </div>
 
