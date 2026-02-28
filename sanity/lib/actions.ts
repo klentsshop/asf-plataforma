@@ -107,6 +107,7 @@ const abogado = await client.create({
       telefono: datos.telefono,
       especialidad: datos.rama,
       inpreabogado: datos.inpre,
+      ubicacion: datos.ubicacion,
       
       // FOTO 1: CARNET NITIDO
       pdfInpreabogado: {
