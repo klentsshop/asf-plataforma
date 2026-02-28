@@ -20,7 +20,7 @@ export function Navbar({ abogadoInfo, setVista, cerrarSesion }: NavbarProps) {
           <Scale className="text-white w-5 h-5" />
         </div>
         <span className="text-white font-black tracking-tighter uppercase text-sm italic">
-          Panel <span className="text-[#D4AF37]">Profesional ASF</span>
+          Panel <span className="text-[#D4AF37]">Profesional TASF</span>
         </span>
       </div>
 

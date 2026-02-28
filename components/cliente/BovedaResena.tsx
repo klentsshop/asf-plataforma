@@ -16,7 +16,7 @@ export function BovedaResena({ onSend, cargando }: any) {
   if (enviado) return (
     <div className="bg-emerald-50 p-6 md:p-8 rounded-[2.5rem] border-2 border-emerald-100 text-center animate-fade-in">
       <p className="text-emerald-700 font-black uppercase text-[9px] md:text-[10px] tracking-widest italic leading-relaxed">
-        ¡Gracias por su confianza! Su reseña ha sido publicada.
+        ¡Gracias por su confiar en Tu Abogado Sin fronteras! Su reseña ha sido publicada.
       </p>
     </div>
   );
@@ -25,7 +25,7 @@ export function BovedaResena({ onSend, cargando }: any) {
     <div className="bg-white p-5 md:p-8 rounded-[2.5rem] border-4 border-[#D4AF37] shadow-2xl space-y-6 mx-auto w-full">
       <div className="text-center">
         <p className="text-[#1a1a1a] font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] md:tracking-[0.3em] mb-4 italic leading-tight px-2">
-          ¿Cómo calificaría su <br className="md:hidden" /> experiencia en ASF?
+          ¿Cómo calificaría su <br className="md:hidden" /> experiencia en TASF?
         </p>
         
         {/* GAP REDUCIDO EN MÓVIL (gap-1) PARA EVITAR DESBORDE */}

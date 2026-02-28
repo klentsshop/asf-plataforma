@@ -56,7 +56,7 @@ export const crearCasoAnonimo = async (datos: any) => {
     const sequential = await client.fetch(`count(*[_type == "caso"])`);
     const nuevaSecuencia = sequential + 1;
     // Formato: ASF-2026-00001
-    const codigoPremium = `ASF-${new Date().getFullYear()}-${String(nuevaSecuencia).padStart(5, "0")}`;
+    const codigoPremium = `TASF-${new Date().getFullYear()}-${String(nuevaSecuencia).padStart(5, "0")}`;
 
     // Creación del caso sincronizada con Schema
     const caso = await client.create({
@@ -87,7 +87,8 @@ export const crearCasoAnonimo = async (datos: any) => {
 /**
  * ACCIÓN: Registrar Postulación de Abogado con Blindaje de Unicidad
  */
-export const registrarPostulacionAbogado = async (datos: any, assetId: string) => {
+export const registrarPostulacionAbogado = async (datos: any, carnetId: string, 
+  selfieId: string) => {
   try {
     const erroresUnicidad = await validateUnicidad("abogado", { 
       cedula: datos.cedula, 
@@ -98,8 +99,7 @@ export const registrarPostulacionAbogado = async (datos: any, assetId: string) =
     if (erroresUnicidad) {
       return { success: false, errorType: "UNICIDAD", mensajes: erroresUnicidad };
     }
-
-    const abogado = await client.create({
+const abogado = await client.create({
       _type: 'abogado',
       nombre: datos.nombre,
       cedula: datos.cedula,
@@ -107,10 +107,19 @@ export const registrarPostulacionAbogado = async (datos: any, assetId: string) =
       telefono: datos.telefono,
       especialidad: datos.rama,
       inpreabogado: datos.inpre,
+      
+      // FOTO 1: CARNET NITIDO
       pdfInpreabogado: {
         _type: 'file',
-        asset: { _type: 'reference', _ref: assetId }
+        asset: { _type: 'reference', _ref: carnetId }
       },
+      
+      // FOTO 2: ABOGADO SOSTENIENDO EL CARNET (NUEVO)
+      fotoSelfieInpre: {
+        _type: 'file',
+        asset: { _type: 'reference', _ref: selfieId }
+      },
+      
       estatus: 'pendiente',
       verificado: false,
       fechaPostulacion: new Date().toISOString(),
@@ -122,46 +131,74 @@ export const registrarPostulacionAbogado = async (datos: any, assetId: string) =
     return { success: false, error: "Error técnico en registro" };
   }
 };
-
 /**
  * PASO 2: Vincular Cliente al Caso (activación oficial)
  */
 export const registrarYVincularCliente = async (casoId: string, datosCliente: any) => {
   try {
+    // 1. Validamos unicidad (Mantenemos tu lógica original de validación)
     const erroresUnicidad = await validateUnicidad("cliente", { 
       cedula: datosCliente.cedula, 
       email: datosCliente.email 
     });
 
+    let clienteId: string;
+
     if (erroresUnicidad) {
-      return { success: false, errorType: "UNICIDAD", mensajes: erroresUnicidad };
+      // 2. LÓGICA DE RECURRENCIA Y SEGURIDAD CRÍTICA
+      // Buscamos al cliente que tiene ese correo o esa cédula
+      const clienteExistente = await client.fetch(
+        `*[_type == "cliente" && (email == $email || cedula == $cedula)][0]{ _id, email, cedula }`,
+        { email: datosCliente.email, cedula: datosCliente.cedula }
+      );
+
+      if (clienteExistente) {
+        // 🔒 EL CERROJO DE SEGURIDAD:
+        // Si el correo ya existe en la base de datos, pero la cédula ingresada es diferente
+        // a la cédula registrada para ese correo, bloqueamos por riesgo de suplantación.
+        if (clienteExistente.email === datosCliente.email && clienteExistente.cedula !== datosCliente.cedula) {
+          return { 
+            success: false, 
+            errorType: "SEGURIDAD", 
+            mensajes: { email: "🚨 Identidad no coincide con el registro oficial. Verifique su Cédula." } 
+          };
+        }
+
+        clienteId = clienteExistente._id;
+      } else {
+        // Si el error de unicidad es real pero no lo encontramos (raro), devolvemos el error original
+        return { success: false, errorType: "UNICIDAD", mensajes: erroresUnicidad };
+      }
+    } else {
+      // 3. Si NO existe, lo creamos como siempre
+      const nuevoCliente = await client.create({
+        _type: 'cliente',
+        nombre: datosCliente.nombre,
+        cedula: datosCliente.cedula,
+        email: datosCliente.email,
+        telefono: datosCliente.telefono,
+      });
+      clienteId = nuevoCliente._id;
     }
 
-    const cliente = await client.create({
-      _type: 'cliente',
-      nombre: datosCliente.nombre,
-      cedula: datosCliente.cedula,
-      email: datosCliente.email,
-      telefono: datosCliente.telefono,
-    });
-
+    // 4. Obtenemos el código de expediente para el retorno (Dato fiel al original)
     const existing = await client.fetch(
       `*[_type=="caso" && _id==$id][0]{ codigoExpediente }`,
       { id: casoId }
     );
 
+    // 5. Vinculamos el caso al cliente (Nuevo o Recurrente)
     await client
       .patch(casoId)
       .set({
-        cliente: { _type: 'reference', _ref: cliente._id },
-        // Al vincularse, el estado se mantiene en análisis hasta que el abogado responda
-        actualizacion: `Cliente ${datosCliente.nombre} vinculado al expediente.`,
+        cliente: { _type: 'reference', _ref: clienteId },
+        actualizacion: `Cliente ${datosCliente.nombre} vinculado al expediente oficial.`,
       })
       .commit();
 
     return { 
       success: true, 
-      clienteId: cliente._id, 
+      clienteId: clienteId, 
       casoId,
       codigoPremium: existing?.codigoExpediente || null 
     };
@@ -183,7 +220,7 @@ export const validarPagoCliente = async (casoId: string) => {
         estado: 'gestion', 
         pagoValidado: true,
         fechaValidacionPago: new Date().toISOString(),
-        actualizacion: "ASF: Pago verificado exitosamente. Iniciando gestión legal."
+        actualizacion: "TASF: Pago verificado exitosamente. Iniciando gestión legal."
       })
       .commit();
 
@@ -198,38 +235,60 @@ export const validarPagoCliente = async (casoId: string) => {
 /**
  * PASO 3: Validar acceso a la Bóveda
  */
-export const validarAccesoBoveda = async (email: string, casoId: string) => {
+export const validarAccesoBoveda = async (email: string, idIngresado: string) => {
   try {
-    const query = `*[_type == "caso" && ( _id == $casoId || codigoExpediente == $casoId ) && cliente->email == $email][0]{
+    // 1. Validación de identidad (Confirmamos que el usuario tiene permiso)
+    const accesoValido = await client.fetch(
+      `*[_type == "caso" && ( _id == $idIngresado || codigoExpediente == $idIngresado ) && cliente->email == $email][0]{ _id }`,
+      { idIngresado, email }
+    );
+
+    if (!accesoValido) {
+      return { success: false, error: "Acceso Denegado. Credenciales no reconocidas." };
+    }
+
+    // Eliminamos el "order desc [0]" por email para que respete el clic del usuario
+    const query = `*[_type == "caso" && _id == $idReal][0]{
       _id,
       codigoExpediente,
       titulo,
       estado,
-      pagoValidado, // 🔥 Agregado para el feedback visual del cliente
+      pagoValidado,
       descripcion,
       categoria,
       ubicacion,
       actualizacion,
       respuestaAbogado,
       presupuestoEstimado,
-      "nombreCliente": cliente->nombre,
-      "emailCliente": cliente->email,
-      "documentosBoveda": documentosBoveda[]{
-        "url": asset->url
+      notificacionPendiente,
+      rating,
+      resenaTexto,
+      mensajeCliente,
+      comprobantePago,
+      cliente->{
+        _id,
+        nombre,
+        email,
+        cedula
       },
-      "documentosPrueba": documentosPrueba[] {
+      "documentosBoveda": documentosBoveda[]{
         "url": asset->url,
         nombreOriginal,
         fechaCarga
+      },
+      "documentosPrueba": documentosPrueba[] {
+        ...,
+        "url": asset->url
       }
     }`;
 
-    const resultado = await client.fetch(query, { casoId, email });
+    // Cambiamos el fetch para que use 'idReal' en lugar de solo el email
+    const resultado = await client.fetch(query, { idReal: accesoValido._id });
 
     if (resultado) {
       return { success: true, datos: resultado };
     } else {
-      return { success: false, error: "Acceso Denegado. Verifique su ID." };
+      return { success: false, error: "No se encontró el expediente solicitado." };
     }
   } catch (error) {
     console.error("Error al validar acceso:", error);

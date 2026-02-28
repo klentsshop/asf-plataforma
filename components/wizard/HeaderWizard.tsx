@@ -10,7 +10,7 @@ export function HeaderWizard({ paso, isPending, navegarPaso }: any) {
         <h1 className="text-3xl md:text-6xl font-black text-white mb-1 tracking-tighter uppercase text-center italic">
           {paso < 5 ? "¿Qué trámite " : paso === 7 ? "Asesoría " : "Validación "} 
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F3E3B4] to-[#B8860B]">
-            {paso < 5 ? "desea gestionar?" : paso === 7 ? "Especializada" : "en curso"}
+            {paso < 5 ? "desea realizar?" : paso === 7 ? "Especializada" : "en curso"}
           </span>
         </h1>
         
@@ -18,7 +18,7 @@ export function HeaderWizard({ paso, isPending, navegarPaso }: any) {
         {paso === 1 && (
           <div className="relative inline-block mt-0 text-center w-full">
             <p className="text-slate-400 text-xs md:text-base font-bold tracking-[0.3em] uppercase italic mb-10 text-center">
-              Servicios Jurídicos Premium en Venezuela
+              Servicios Jurídicos en Venezuela
             </p>
             
             {/* EL ARCO DE 8 ESTRELLAS BLANCAS - Recuperado del código original */}

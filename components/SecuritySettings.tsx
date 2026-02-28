@@ -24,7 +24,7 @@ export function SecuritySettings({ abogadoId }: { abogadoId: string }) {
       setExito(true);
       setTimeout(() => setExito(false), 5000);
     } catch (error) {
-      alert("Error al actualizar la bóveda de seguridad.");
+      alert("Error al actualizar el Usuario Seguro.");
     } finally {
       setCargando(false);
     }
@@ -74,14 +74,14 @@ export function SecuritySettings({ abogadoId }: { abogadoId: string }) {
           disabled={cargando}
           className="w-full p-4 bg-[#1a1a1a] text-[#D4AF37] rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
         >
-          {cargando ? <Loader2 className="animate-spin" size={16} /> : "Actualizar Bóveda"}
+          {cargando ? <Loader2 className="animate-spin" size={16} /> : "Actualizar Usuario"}
         </button>
       </form>
 
       <div className="mt-6 flex items-start gap-2 bg-amber-50 p-3 rounded-xl border border-amber-100">
         <ShieldAlert className="text-amber-600 shrink-0" size={14} />
         <p className="text-[9px] text-amber-800 font-medium italic leading-relaxed">
-          Su contraseña es personal e intransferible. ASF nunca le solicitará su clave por correo o WhatsApp.
+          Su contraseña es personal e intransferible. TASF nunca le solicitará su clave por correo o WhatsApp.
         </p>
       </div>
     </div>

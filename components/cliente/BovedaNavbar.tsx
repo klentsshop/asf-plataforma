@@ -28,7 +28,7 @@ export function BovedaNavbar({ datosCaso }: Props) {
           </div>
           <div className="text-left">
             <span className="text-white font-black uppercase text-lg tracking-tighter italic block leading-none">
-              Bóveda Privada <span className="text-[#D4AF37]">ASF</span>
+              Caso Privado <span className="text-[#D4AF37]">TASF</span>
             </span>
             <p className="text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.4em] opacity-80 mt-1">
               Expediente Digital Protegido

@@ -17,9 +17,9 @@ export async function POST(request: Request) {
     }
 
     const data = await resend.emails.send({
-      from: 'gestion@klentsshop.com', // Asegúrate de que este dominio esté verificado en Resend
+      from: 'gestion@tuabogadosinfronteras.com', // Asegúrate de que este dominio esté verificado en Resend
       to: [email],
-      subject: `⚖️ Acceso Concedido: Bienvenido a la Red ASF`,
+      subject: `⚖️ Acceso Concedido: Bienvenido a la Red TASF`,
       html: `
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0a0a0a; font-family: 'Segoe UI', Arial, sans-serif;">
           <tr>
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
                 </tr>
                 <tr>
                   <td align="center" style="padding: 30px; background-color: #0d0d0d; border-top: 1px solid #222222;">
-                    <p style="color: #444444; font-size: 10px; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Seguridad ASF Cripto-Blindada 2026</p>
+                    <p style="color: #444444; font-size: 10px; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Seguridad TASF Cripto-Blindada 2026</p>
                   </td>
                 </tr>
               </table>

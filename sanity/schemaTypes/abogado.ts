@@ -84,6 +84,11 @@ export const abogado = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+  name: 'fotoSelfieInpre', // 👈 Nuevo campo
+  title: 'Selfie con el Carnet',
+  type: 'file',
+   }),
+    defineField({
       name: 'especialidad',
       title: 'Especialidad',
       description: 'Debe coincidir con la categoría del caso para el Match.',
@@ -156,7 +161,7 @@ export const abogado = defineType({
     }),
     defineField({
       name: 'verificado',
-      title: '¿Verificado por ASF?',
+      title: '¿Verificado por TASF?',
       type: 'boolean',
       initialValue: false,
     }),
@@ -164,7 +169,7 @@ export const abogado = defineType({
       name: 'password',
       title: 'Contraseña de Acceso (Temporal)',
       type: 'string',
-      initialValue: () => `ASF-${Math.floor(1000 + Math.random() * 9000)}`,
+      initialValue: () => `TASF-${Math.floor(1000 + Math.random() * 9000)}`,
       description: 'Esta clave se enviará automáticamente al aprobar al abogado.',
       readOnly: true,
       hidden: ({currentUser}) => !currentUser?.roles.find(role => role.name === 'administrator'),

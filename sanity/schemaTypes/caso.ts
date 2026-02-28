@@ -10,7 +10,7 @@ export const caso = defineType({
       name: 'codigoExpediente',
       title: 'Código de Expediente',
       type: 'string',
-      description: 'Código Premium visible por cliente (Formato ASF-AAAA-#####)',
+      description: 'Código Premium visible por cliente (Formato TASF-AAAA-#####)',
       readOnly: true,
     }),
 
@@ -36,7 +36,7 @@ export const caso = defineType({
       title: '¿Tiene notificación pendiente?',
       type: 'boolean',
       initialValue: false,
-      description: 'Activa el parpadeo de la campana dorada en la bóveda del cliente cuando el abogado actualiza.',
+      description: 'Activa el parpadeo de la campana dorada en el Usuario del cliente cuando el abogado actualiza.',
     }),
 
     // === MATCHMAKER ===
@@ -180,7 +180,7 @@ export const caso = defineType({
     defineField({
       name: 'mensajeCliente',
       title: 'Respuesta del Cliente (Bóveda)',
-      description: 'Último mensaje técnico enviado por el cliente desde su bóveda privada.',
+      description: 'Último mensaje técnico enviado por el cliente desde su Caso privado.',
       type: 'text',
       rows: 3,
     }),
@@ -226,7 +226,7 @@ export const caso = defineType({
       name: 'resenaTexto',
       title: 'Comentario de la Reseña',
       type: 'text',
-      description: 'Breve comentario sobre la experiencia con ASF',
+      description: 'Breve comentario sobre la experiencia con TASF',
     }),
 
     defineField({

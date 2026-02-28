@@ -34,7 +34,7 @@ export function BovedaLogin({
         </div>
 
         <h1 className="text-3xl font-black text-[#1a1a1a] uppercase tracking-tighter mb-2 italic">
-          Acceso a Bóveda
+          Acceso a Usuario
         </h1>
 
         <p className="text-slate-400 text-[10px] mb-10 uppercase tracking-[0.3em] font-bold italic">

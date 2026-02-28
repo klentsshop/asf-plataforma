@@ -20,7 +20,7 @@ export function BovedaRepositorio({ datosCaso }: Props) {
         {/* Documentos Emitidos por ASF */}
         <div className="space-y-3">
           <p className="text-[9px] font-black text-[#D4AF37] uppercase tracking-widest italic ml-2 text-left">
-            Documentos Emitidos por ASF
+            Documentos Emitidos por TASF
           </p>
 
           {datosCaso?.documentosBoveda ? (

@@ -103,7 +103,7 @@ export default function LoginAbogado() {
           </div>
 
           <h1 className="text-3xl font-black text-[#00244C] mb-2 uppercase tracking-tighter italic">
-            Acceso <span className="text-[#D4AF37]">Red ASF</span>
+            Acceso <span className="text-[#D4AF37]">Red TASF</span>
           </h1>
           <p className="text-slate-400 text-[10px] mb-12 uppercase font-bold tracking-[0.3em] italic leading-none">
             Panel de Especialistas Venezuela

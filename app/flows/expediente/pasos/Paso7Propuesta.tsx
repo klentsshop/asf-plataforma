@@ -5,7 +5,7 @@ export function Paso7Propuesta({ notificacion, navegarPaso, casoIdGenerado }: Pa
   return (
     <div className="w-full max-w-2xl animate-in slide-in-from-bottom-8 duration-500">
       <div className="bg-white p-12 rounded-[3rem] shadow-2xl border-4 border-[#D4AF37] text-center">
-        <p className="text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.5em] mb-4 italic">Asesoría Especializada ASF</p>
+        <p className="text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.5em] mb-4 italic">Asesoría Especializada TASF</p>
         <h2 className="text-3xl font-black text-[#00244C] mb-10 uppercase tracking-tighter italic">Propuesta Legal</h2>
         
         <div className="bg-white p-8 rounded-3xl text-left border-4 border-[#D4AF37]/20 mb-10 italic text-slate-600 shadow-inner leading-relaxed font-bold">

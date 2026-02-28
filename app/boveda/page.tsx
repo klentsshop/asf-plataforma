@@ -26,16 +26,16 @@ export default function BovedaPage() {
 
   // 0. PERSISTENCIA + AUTO-REFRESCO SILENCIOSO (Cada 30 seg)
   useEffect(() => {
-    const storageId = sessionStorage.getItem("asf_id");
-    const storageEmail = sessionStorage.getItem("asf_email");
-
     const checkSesionYRefrescar = async (isSilent = false) => {
+      const storageId = sessionStorage.getItem("asf_id");
+      const storageEmail = sessionStorage.getItem("asf_email");
       if (storageId && storageEmail) {
         try {
           const res = await validarAccesoBoveda(storageEmail, storageId);
           if (res.success) {
             setDatosCaso(res.datos);
             setAcceso(true);
+            sessionStorage.setItem("asf_id", res.datos._id);
           }
         } catch (error) {
           console.error("Error en sincronización silenciosa:", error);
@@ -66,7 +66,7 @@ export default function BovedaPage() {
       const res = await validarAccesoBoveda(credenciales.email, credenciales.casoId);
       if (res.success) {
         // GUARDAR SESIÓN PARA F5
-        sessionStorage.setItem("asf_id", credenciales.casoId);
+        sessionStorage.setItem("asf_id", res.datos._id);
         sessionStorage.setItem("asf_email", credenciales.email);
 
         setDatosCaso(res.datos);
@@ -104,11 +104,15 @@ export default function BovedaPage() {
         })
         .commit();
 
-      alert("Comprobante enviado. ASF validará su pago en breve.");
+      alert("Comprobante enviado. TASF validará su pago en breve.");
+      
+      // Mantenemos tu consulta original pero agregamos la expansión de cliente vital
       const refresh = await client.fetch(`*[_type == "caso" && _id == $id][0]{
         ...,
+        cliente->{ _id, nombre, email, cedula },
         "documentosPrueba": documentosPrueba[]{ ..., "url": asset->url }
       }`, { id: datosCaso._id });
+      
       setDatosCaso(refresh);
     } catch (_e) {
       alert("Error al subir el comprobante.");
@@ -130,10 +134,13 @@ export default function BovedaPage() {
 
       alert("Mensaje enviado con éxito al Departamento Legal.");
       
+      // Recuperamos tu bloque de consulta completo
       const refresh = await client.fetch(`*[_type == "caso" && _id == $id][0]{
         ...,
+        cliente->{ _id, nombre, email, cedula },
         "documentosPrueba": documentosPrueba[]{ ..., "url": asset->url }
       }`, { id: datosCaso._id });
+      
       setDatosCaso(refresh);
     } catch (error) {
       alert("Error al enviar el mensaje.");
@@ -156,12 +163,15 @@ export default function BovedaPage() {
         })
         .commit();
 
-      alert("¡Gracias! Su reseña ha sido publicada en el portal oficial de ASF.");
+      alert("¡Gracias! Su reseña ha sido publicada en el portal oficial de TASF.");
       
+      // Recuperamos tu bloque de consulta completo
       const refresh = await client.fetch(`*[_type == "caso" && _id == $id][0]{
         ...,
+        cliente->{ _id, nombre, email, cedula },
         "documentosPrueba": documentosPrueba[]{ ..., "url": asset->url }
       }`, { id: datosCaso._id });
+      
       setDatosCaso(refresh);
     } catch (error) {
       alert("Error al publicar la reseña.");
@@ -193,9 +203,11 @@ export default function BovedaPage() {
 
       alert("Documento cargado exitosamente.");
 
+      // Recuperamos tu bloque de consulta completo
       const dataActualizada = await client.fetch(`
         *[_type == "caso" && _id == $id][0]{
           ...,
+          cliente->{ _id, nombre, email, cedula },
           "documentosPrueba": documentosPrueba[]{
             ...,
             "url": asset->url
@@ -211,13 +223,13 @@ export default function BovedaPage() {
     }
   };
 
-  // Pantalla de carga inicial (Estética ASF)
+  // Pantalla de carga inicial (Estética TASF)
   if (cargando && !acceso) {
     return (
       <div className="min-h-screen bg-[#1a1a1a] flex flex-col items-center justify-center gap-6">
         <div className="relative">
           <div className="animate-spin rounded-full h-20 w-20 border-t-4 border-b-4 border-[#D4AF37]"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#D4AF37] font-black text-[10px] italic">ASF</div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#D4AF37] font-black text-[10px] italic">TASF</div>
         </div>
         <p className="text-[#D4AF37] text-[10px] font-black uppercase tracking-[0.5em] animate-pulse italic">Verificando Credenciales...</p>
       </div>

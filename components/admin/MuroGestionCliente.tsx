@@ -13,7 +13,7 @@ export function MuroGestionCliente({ onSend, cargando }: any) {
     if (mensaje.length > 0) {
       const { isSafe } = filterSensitiveInfo(mensaje);
       if (!isSafe) {
-        setError("Seguridad ASF: Datos de contacto detectados.");
+        setError("Seguridad TASF: Datos de contacto detectados.");
       } else {
         setError("");
       }
@@ -76,7 +76,7 @@ export function MuroGestionCliente({ onSend, cargando }: any) {
       </button>
       
       <p className="text-center text-[8px] text-slate-400 font-bold uppercase tracking-widest italic">
-        Su mensaje será filtrado por el protocolo de seguridad ASF
+        Su mensaje será filtrado por el protocolo de seguridad TASF
       </p>
     </div>
   );

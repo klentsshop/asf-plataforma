@@ -5,26 +5,32 @@ import {
   Scale, User, Fingerprint, Mail, Briefcase, 
   FileUp, Send, Loader2, CheckCircle, 
   Image as ImageIcon, ChevronLeft, ShieldCheck, 
-  Phone, MapPin, AlertCircle
+  Phone, MapPin, Camera, AlertCircle
 } from "lucide-react";
 import { client } from "@/sanity/lib/client";
 import { useRouter } from "next/navigation";
+// IMPORTANTE: Asegúrate que esta ruta sea correcta según tu proyecto
+import { registrarPostulacionAbogado } from "@/sanity/lib/actions";
 
 export default function RegistroAbogado() {
   const router = useRouter();
   const [enviado, setEnviado] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [validando, setValidando] = useState(false);
+  
+  // 📸 ESTADOS PARA LAS DOS FOTOS
   const [archivoInpre, setArchivoInpre] = useState<File | null>(null);
+  const [archivoSelfie, setArchivoSelfie] = useState<File | null>(null);
+  
   const [errores, setErrores] = useState<{ cedula?: string; email?: string; inpre?: string }>({});
   
   const ramasLegales = [
-    { title: '🏡 Propiedades', value: 'propiedades' },
-    { title: '👨‍👩‍👧‍👦 Familias', value: 'familias' },
-    { title: '💼 Negocios', value: 'negocios' },
-    { title: '⚖️ Defensas', value: 'penal' },
-    { title: '📄 Gestiones', value: 'gestiones' },
-    { title: '⚖️ Exclusivos', value: 'global' },
+    { title: '🏡 Civil(Propiedades)', value: 'propiedades' },
+    { title: '👨‍👩‍👧‍👦 Familia(Relaciones)', value: 'familias' },
+    { title: '💼 Mercantil(Negocios)', value: 'negocios' },
+    { title: '⚖️ Penal(Defensas)', value: 'penal' },
+    { title: '📄 Administrativo(Trámites)', value: 'gestiones' },
+    { title: '⚖️ Laboral(Trabajadores)', value: 'global' },
   ];
 
   const estadosVenezuela = [
@@ -45,7 +51,6 @@ export default function RegistroAbogado() {
         const nuevosErrores: any = {};
 
         try {
-          // Validar Cédula y Email contra Clientes y Abogados
           if (datos.cedula) {
             const exCed = await client.fetch(`*[(_type == "cliente" || _type == "abogado") && cedula == $val][0]`, { val: datos.cedula });
             if (exCed) nuevosErrores.cedula = "🚨 Documento ya registrado.";
@@ -54,7 +59,6 @@ export default function RegistroAbogado() {
             const exMail = await client.fetch(`*[(_type == "cliente" || _type == "abogado") && email == $val][0]`, { val: datos.email });
             if (exMail) nuevosErrores.email = "🚨 Correo ya en uso.";
           }
-          // Validar INPRE solo en Abogados
           if (datos.inpre) {
             const exInpre = await client.fetch(`*[_type == "abogado" && inpreabogado == $val][0]`, { val: datos.inpre });
             if (exInpre) nuevosErrores.inpre = "🚨 Número INPRE ya registrado.";
@@ -74,39 +78,35 @@ export default function RegistroAbogado() {
   const manejarRegistro = async (e: React.FormEvent) => {
     e.preventDefault();
     if (Object.keys(errores).length > 0) return alert("Por favor, corrija los datos duplicados.");
-    if (!archivoInpre) return alert("Por favor, suba la foto de su carnet de INPREABOGADO.");
+    if (!archivoInpre || !archivoSelfie) return alert("Por favor, suba tanto el carnet como la selfie de validación.");
     
     setCargando(true);
     try {
-      const asset = await client.assets.upload('file', archivoInpre);
-      await client.create({
-        _type: 'abogado',
-        nombre: datos.nombre,
-        cedula: datos.cedula,
-        email: datos.email,
-        especialidad: datos.rama,
-        ubicacion: datos.ubicacion,
-        inpreabogado: datos.inpre,
-        pdfInpreabogado: {
-          _type: 'file',
-          asset: { _type: 'reference', _ref: asset._id }
-        },
-        telefono: datos.telefono,
-        estatus: 'pendiente',
-        fechaPostulacion: new Date().toISOString()
-      });
+      // 1. Subir Foto del Carnet
+      const assetInpre = await client.assets.upload('file', archivoInpre);
+      
+      // 2. Subir Foto Selfie
+      const assetSelfie = await client.assets.upload('file', archivoSelfie);
 
-      await fetch('/api/registro-abogado', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nombre: datos.nombre, 
-          email: datos.email, 
-          inpre: datos.inpre,
-          ubicacion: datos.ubicacion
-        })
-      });
-      setEnviado(true);
+      // 3. Llamar a la acción del servidor (ESTO CREA EL ABOGADO CORRECTAMENTE)
+      const res = await registrarPostulacionAbogado(datos, assetInpre._id, assetSelfie._id);
+
+      if (res.success) {
+        // 4. Enviar notificación por correo
+        await fetch('/api/registro-abogado', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nombre: datos.nombre, 
+            email: datos.email, 
+            inpre: datos.inpre,
+            ubicacion: datos.ubicacion
+          })
+        });
+        setEnviado(true);
+      } else {
+        alert(res.error || "Error en el registro.");
+      }
     } catch (error) {
       console.error("Error:", error);
       alert("Error en el registro técnico.");
@@ -126,7 +126,7 @@ export default function RegistroAbogado() {
         </div>
         <h2 className="text-3xl font-black text-[#1a1a1a] uppercase italic tracking-tighter leading-none">Postulación Recibida</h2>
         <p className="text-slate-500 text-sm mt-4 font-bold italic leading-relaxed">
-          Su documentación ha sido enviada con éxito. En un plazo máximo de **3 días hábiles** recibirá sus claves.
+          Su documentación y selfie de validación han sido enviadas. En un plazo máximo de **3 días hábiles** recibirá sus claves.
         </p>
         <button onClick={() => router.push('/')} className="mt-8 px-10 py-4 bg-[#1a1a1a] text-[#D4AF37] rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl border-2 border-[#D4AF37]/50">Volver al Inicio</button>
       </div>
@@ -156,7 +156,7 @@ export default function RegistroAbogado() {
           <h1 className="text-4xl md:text-5xl font-black text-[#00244C] uppercase italic tracking-tighter text-center leading-none">
             Registro <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#B8860B]">Profesional</span>
           </h1>
-          <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em] mt-3 italic text-center">Activación de Credenciales ASF • 2026</p>
+          <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.4em] mt-3 italic text-center">Auditoría Biométrica TASF • 2026</p>
         </div>
 
         <form onSubmit={manejarRegistro} className="space-y-6">
@@ -193,7 +193,7 @@ export default function RegistroAbogado() {
                 className="w-full p-5 pl-14 bg-white border-4 border-[#D4AF37]/30 rounded-2xl outline-none focus:border-[#D4AF37] appearance-none cursor-pointer transition-all font-black text-xs text-slate-700 shadow-md" 
                 onChange={(e)=>setDatos({...datos, rama: e.target.value})}
               >
-                <option value="">Rama de Especialidad</option>
+                <option value="">Especialidad</option>
                 {ramasLegales.map(rama => (<option key={rama.value} value={rama.value}>{rama.title}</option>))}
               </select>
             </div>
@@ -225,39 +225,66 @@ export default function RegistroAbogado() {
             {errores.inpre && <p className="text-[8px] text-red-500 font-black mt-1 ml-4 uppercase italic tracking-widest">{errores.inpre}</p>}
           </div>
 
-          <div className="mt-4">
-            <div className={`relative border-4 border-dashed rounded-[2.5rem] p-10 transition-all flex flex-col items-center justify-center gap-4 ${archivoInpre ? 'border-emerald-500 bg-emerald-50/50' : 'border-[#D4AF37]/30 bg-white hover:border-[#D4AF37]'}`}>
+          {/* 🏛️ SECCIÓN DE CARGA DOBLE (CARNET + SELFIE) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            
+            {/* CARGADOR 1: CARNET */}
+            <div className={`relative border-4 border-dashed rounded-[2.5rem] p-8 transition-all flex flex-col items-center justify-center gap-4 ${archivoInpre ? 'border-emerald-500 bg-emerald-50/50' : 'border-[#D4AF37]/30 bg-white hover:border-[#D4AF37]'}`}>
               <input 
                 required 
                 type="file" 
-                id="file-upload"
-                accept="image/*,.pdf" 
+                id="upload-carnet"
+                accept="image/*" 
                 className="hidden" 
                 onChange={(e) => setArchivoInpre(e.target.files?.[0] || null)} 
               />
               {archivoInpre ? (
-  <>
-    <ImageIcon className="text-emerald-500 animate-bounce" size={40} />
-    <div className="text-center min-w-0 max-w-full px-4"> {/* Agregamos min-w-0 */}
-      <span className="block text-[11px] text-emerald-600 font-black uppercase tracking-widest">Documento Listo</span>
-      {/* CORRECCIÓN AQUÍ: 
-          - truncate: corta el texto con puntos suspensivos
-          - max-w-[200px]: evita que se estire más allá del ancho del celular
-      */}
-      <span className="block text-[9px] text-slate-400 font-bold truncate max-w-[180px] md:max-w-xs mx-auto">
-        {archivoInpre.name}
-      </span>
-    </div>
-    <button type="button" onClick={() => setArchivoInpre(null)} className="text-[10px] text-red-400 underline uppercase font-black hover:text-red-600">Cambiar archivo</button>
-  </>
-) : (
-                <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center gap-4 group">
-                  <div className="w-16 h-16 bg-[#1a1a1a] rounded-full flex items-center justify-center text-[#D4AF37] shadow-xl border-4 border-[#D4AF37] group-hover:scale-110 transition-transform">
-                    <FileUp size={28} />
+                <>
+                  <ImageIcon className="text-emerald-500 animate-pulse" size={32} />
+                  <div className="text-center min-w-0 max-w-full">
+                    <span className="block text-[10px] text-emerald-600 font-black uppercase">Carnet Listo</span>
+                    <span className="block text-[8px] text-slate-400 font-bold truncate max-w-[150px] mx-auto">{archivoInpre.name}</span>
+                  </div>
+                  <button type="button" onClick={() => setArchivoInpre(null)} className="text-[9px] text-red-400 underline uppercase font-black">Cambiar</button>
+                </>
+              ) : (
+                <label htmlFor="upload-carnet" className="cursor-pointer flex flex-col items-center gap-3 group">
+                  <div className="w-14 h-14 bg-[#1a1a1a] rounded-full flex items-center justify-center text-[#D4AF37] border-2 border-[#D4AF37] group-hover:scale-110 transition-transform shadow-lg">
+                    <FileUp size={24} />
                   </div>
                   <div className="text-center">
-                    <span className="block text-[11px] text-[#1a1a1a] font-black uppercase tracking-widest mb-1">Cargar Carnet INPRE</span>
-                    <span className="block text-[9px] text-slate-400 font-bold uppercase tracking-tighter italic">Imagen o PDF de su registro oficial</span>
+                    <span className="block text-[10px] text-[#1a1a1a] font-black uppercase tracking-widest">Cargar Carnet</span>
+                  </div>
+                </label>
+              )}
+            </div>
+
+            {/* CARGADOR 2: SELFIE */}
+            <div className={`relative border-4 border-dashed rounded-[2.5rem] p-8 transition-all flex flex-col items-center justify-center gap-4 ${archivoSelfie ? 'border-emerald-500 bg-emerald-50/50' : 'border-[#D4AF37]/30 bg-white hover:border-[#D4AF37]'}`}>
+              <input 
+                required 
+                type="file" 
+                id="upload-selfie"
+                accept="image/*" 
+                className="hidden" 
+                onChange={(e) => setArchivoSelfie(e.target.files?.[0] || null)} 
+              />
+              {archivoSelfie ? (
+                <>
+                  <Camera className="text-emerald-500 animate-pulse" size={32} />
+                  <div className="text-center min-w-0 max-w-full">
+                    <span className="block text-[10px] text-emerald-600 font-black uppercase">Selfie Lista</span>
+                    <span className="block text-[8px] text-slate-400 font-bold truncate max-w-[150px] mx-auto">{archivoSelfie.name}</span>
+                  </div>
+                  <button type="button" onClick={() => setArchivoSelfie(null)} className="text-[9px] text-red-400 underline uppercase font-black">Cambiar</button>
+                </>
+              ) : (
+                <label htmlFor="upload-selfie" className="cursor-pointer flex flex-col items-center gap-3 group">
+                  <div className="w-14 h-14 bg-[#1a1a1a] rounded-full flex items-center justify-center text-[#D4AF37] border-2 border-[#D4AF37] group-hover:scale-110 transition-transform shadow-lg">
+                    <Camera size={24} />
+                  </div>
+                  <div className="text-center">
+                    <span className="block text-[10px] text-[#1a1a1a] font-black uppercase tracking-widest">Cargar Selfie</span>
                   </div>
                 </label>
               )}
@@ -265,9 +292,9 @@ export default function RegistroAbogado() {
           </div>
 
           <button 
-            disabled={cargando || hayErrores || validando} 
+            disabled={cargando || hayErrores || validando || !archivoInpre || !archivoSelfie} 
             className={`w-full mt-8 p-6 rounded-2xl font-black text-sm tracking-[0.2em] uppercase transition-all italic flex items-center justify-center gap-3 shadow-2xl border-2 border-white ${
-              (cargando || hayErrores || validando) ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] hover:scale-[1.02]"
+              (cargando || hayErrores || validando || !archivoInpre || !archivoSelfie) ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] hover:scale-[1.02]"
             }`}
           >
             {cargando ? (

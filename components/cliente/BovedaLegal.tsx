@@ -3,7 +3,7 @@
 import { MessageSquare, AlertCircle, Loader2 } from "lucide-react";
 // CORRECCIÓN DE RUTA: Subimos un nivel para entrar a la carpeta admin
 import { MuroGestionCliente } from "../admin/MuroGestionCliente";
-import { BovedaResena } from "./BovedaResena"; // Importamos el nuevo componente
+import { BovedaResena } from "./BovedaResena"; 
 
 type Props = {
   datosCaso: any;
@@ -11,7 +11,7 @@ type Props = {
   subirComprobante: (e: any) => void;
   indiceActual: number;
   enviarMensajeAlAbogado: (mensaje: string) => void; 
-  enviarResenaFinal: (resena: { rating: number; resenaTexto: string }) => void; // Nueva Prop
+  enviarResenaFinal: (resena: { rating: number; resenaTexto: string }) => void; 
 };
 
 export function BovedaLegal({ 
@@ -20,10 +20,13 @@ export function BovedaLegal({
   subirComprobante, 
   indiceActual, 
   enviarMensajeAlAbogado,
-  enviarResenaFinal // Recibimos la prop
+  enviarResenaFinal 
 }: Props) {
+  // Verificación de estado para control de interfaz
+  const esCasoCerrado = datosCaso?.estado === 'concluido';
+
   return (
-    <div className="bg-white p-5 md:p-10 rounded-[3rem] shadow-2xl border-4 border-[#D4AF37] relative overflow-hidden text-left">
+    <div className="bg-white p-5 md:p-10 rounded-[3rem] shadow-2xl border-4 border-[#D4AF37] relative overflow-hidden text-left w-full">
       {/* Decoración de fondo */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-3xl" />
 
@@ -32,9 +35,9 @@ export function BovedaLegal({
         <span>Comunicación del <br className="md:hidden" /> Departamento Legal</span>
       </h2>
 
-      <div className="bg-[#F9FAFB] border-4 border-[#D4AF37]/10 p-5 md:p-10 rounded-[2.5rem] relative z-10 text-left">
+      <div className="bg-[#F9FAFB] border-4 border-[#D4AF37]/10 p-5 md:p-10 rounded-[2.5rem] relative z-10 text-left w-full">
 
-        {/* Header comunicación */}
+        {/* Header comunicación con ajuste para móvil */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-2 border-slate-200 pb-5 gap-4">
           <div className="flex items-center gap-3 text-left">
             <div className={`w-3 h-3 rounded-full animate-ping shrink-0 ${indiceActual >= 2 ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
@@ -42,7 +45,7 @@ export function BovedaLegal({
               Dictamen Técnico Actualizado
             </p>
           </div>
-          <span className="text-[8px] md:text-[9px] text-[#D4AF37] font-black uppercase tracking-widest italic bg-[#1a1a1a] px-3 py-1 rounded-full border border-[#D4AF37]/30">
+          <span className="text-[8px] md:text-[9px] text-[#D4AF37] font-black uppercase tracking-widest italic bg-[#1a1a1a] px-3 py-1 rounded-full border border-[#D4AF37]/30 shrink-0">
             Cifrado AES-256
           </span>
         </div>
@@ -53,16 +56,16 @@ export function BovedaLegal({
           "El departamento legal está procesando la información técnica de su caso bajo estrictos protocolos de confidencialidad."}"
         </p>
 
-        {/* Pago - Presupuesto */}
+        {/* Pago - Presupuesto (Ajuste de overflow móvil) */}
         {datosCaso?.presupuestoEstimado && !datosCaso?.pagoValidado && (
           <div className="pt-10 border-t-2 border-dashed border-slate-200 flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-left w-full md:w-auto">
-              <p className="text-[10px] font-black text-[#D4AF37] uppercase tracking-widest mb-2 italic text-left">
+              <p className="text-[10px] font-black text-[#D4AF37] uppercase tracking-widest mb-2 italic leading-none">
                 Honorarios de Gestión
               </p>
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl font-black text-[#1a1a1a]">$</span>
-                <p className="text-4xl md:text-5xl font-black text-[#1a1a1a] tracking-tighter">
+                <p className="text-4xl md:text-5xl font-black text-[#1a1a1a] tracking-tighter leading-none">
                   {datosCaso.presupuestoEstimado}
                 </p>
               </div>
@@ -72,7 +75,7 @@ export function BovedaLegal({
               {subiendoArchivo ? (
                 <><Loader2 className="animate-spin" size={18} /> PROCESANDO...</>
               ) : (
-                "SUBIR COMPROBANTE DE PAGO"
+                "SUBIR COMPROBANTE"
               )}
               <input type="file" className="hidden" onChange={subirComprobante} accept="image/*" disabled={subiendoArchivo} />
             </label>
@@ -81,23 +84,25 @@ export function BovedaLegal({
 
         {/* Advertencia pago en revisión */}
         {datosCaso?.comprobantePago && !datosCaso?.pagoValidado && (
-          <div className="mt-8 bg-amber-500/10 border-2 border-amber-500/20 p-4 rounded-2xl flex items-center gap-3 animate-pulse text-left">
+          <div className="mt-8 bg-amber-500/10 border-2 border-amber-500/20 p-4 rounded-2xl flex items-center gap-3 animate-pulse">
             <AlertCircle className="text-amber-500 shrink-0" size={18} />
-            <p className="text-[8px] md:text-[9px] text-amber-600 font-black uppercase italic tracking-widest text-left leading-tight">
+            <p className="text-[8px] md:text-[9px] text-amber-600 font-black uppercase italic tracking-widest leading-tight">
               Pago en revisión por el Departamento Administrativo.
             </p>
           </div>
         )}
 
-        {/* BLOQUEO DE SEGURIDAD / MURO DEL CLIENTE */}
-        <MuroGestionCliente 
-          onSend={enviarMensajeAlAbogado} 
-          cargando={subiendoArchivo} 
-        />
+        {/* BLOQUEO DE SEGURIDAD / MURO DEL CLIENTE - Solo si NO está concluido */}
+        {!esCasoCerrado && (
+          <MuroGestionCliente 
+            onSend={enviarMensajeAlAbogado} 
+            cargando={subiendoArchivo} 
+          />
+        )}
 
         {/* SECCIÓN DE RESEÑA: Solo aparece si el estado es concluido y no hay rating previo */}
-        {datosCaso?.estado === 'concluido' && !datosCaso?.rating && (
-          <div className="mt-10 pt-6 md:pt-10 border-t-4 border-[#D4AF37]/20 w-full">
+        {esCasoCerrado && !datosCaso?.rating && (
+          <div className="mt-10 pt-6 md:pt-10 border-t-4 border-[#D4AF37]/20 w-full animate-in fade-in slide-in-from-top-4 duration-700">
             <BovedaResena 
               onSend={enviarResenaFinal} 
               cargando={subiendoArchivo} 

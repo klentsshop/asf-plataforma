@@ -106,15 +106,46 @@ export default function Page() {
   const finalizarRegistroOficial = async () => {
     const casoId = casoIdGenerado || localStorage.getItem("asf_caso_id") || "";
     if (!casoId) return alert("Error: No se detectó un ID de expediente activo.");
+    
     if (!seleccion.nombre || !seleccion.email || !seleccion.cedula) {
       return alert("Por favor, complete su nombre, cédula y correo electrónico.");
     }
+    
     setCargando(true);
 
     try {
       const res = await registrarYVincularCliente(casoId, seleccion);
-      if (!res.success) throw new Error("Error técnico al vincular el cliente.");
+      
+      let esRecurrente = false; // Flag para detectar si es Johanna
 
+      if (!res.success) {
+        if (res.errorType === "SEGURIDAD") {
+            const mensajeError = res.mensajes && typeof res.mensajes === 'object' 
+              ? (res.mensajes as any).email 
+              : "Identidad no coincide.";
+            throw new Error(mensajeError);
+        }
+        
+        if (res.errorType === "UNICIDAD") {
+            esRecurrente = true; // Confirmamos que es recurrente
+        } else {
+            throw new Error(res.error || "Error técnico al vincular el cliente.");
+        }
+      }
+
+      // 1. GESTIÓN DE SESIÓN INTELIGENTE
+      if (esRecurrente) {
+        // 🔒 SEGURIDAD: Si es recurrente, NO guardamos sesión automática.
+        // Borramos cualquier rastro anterior para forzar el login oficial.
+        sessionStorage.removeItem("asf_id");
+        sessionStorage.removeItem("asf_email");
+      } else {
+        // ✨ CLIENTE NUEVO: Entra directo porque su identidad es nueva.
+        sessionStorage.setItem("asf_id", casoId);
+        sessionStorage.setItem("asf_email", seleccion.email);
+      }
+
+      // 2. Notificación Email (Se envía siempre para que tengan su ID)
       await fetch("/api/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -122,11 +153,15 @@ export default function Page() {
           email: seleccion.email,
           nombre: seleccion.nombre,
           casoId: casoId,
-          codigoExpediente: notificacion.codigoExpediente,
+          codigoExpediente: res.codigoPremium || notificacion.codigoExpediente,
         }),
       });
 
+      // 3. Limpieza y Salto
       localStorage.removeItem("asf_caso_id");
+      
+      // Llevamos al paso de éxito (Paso 6)
+      // En el Paso 6, el botón de "Ir a mi Bóveda" detectará si hay sesión o no.
       navegarPaso(6);
 
     } catch (error: any) {
@@ -176,7 +211,7 @@ export default function Page() {
               onClick={() => { router.push("/boveda"); setMenuMovil(false); }}
               className="w-full py-2 bg-[#D4AF37] text-[#1a1a1a] rounded-xl text-xs font-black uppercase tracking-widest italic"
             >
-              MI BÓVEDA
+              MI USUARIO
             </button>
             <button
               onClick={() => { router.push("/login-abogado"); setMenuMovil(false); }}
@@ -222,7 +257,7 @@ export default function Page() {
 
         <footer className="bg-[#1a1a1a] py-12 border-t-4 border-[#D4AF37] text-center relative z-30">
           <p className="text-slate-500 text-[9px] font-black uppercase italic tracking-[0.5em]">
-            Tu Abogado Sin Fronteras Venezuela • 2026
+            Tu Abogado Sin Fronteras • 2026
           </p>
         </footer>
       </div>

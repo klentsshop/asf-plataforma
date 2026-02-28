@@ -11,7 +11,7 @@ export function ReviewsFooter({ reviews }: { reviews: any[] }) {
         <div className="flex flex-col items-center mb-10">
           <div className="h-1 w-12 bg-[#D4AF37] mb-4 rounded-full" />
           <h2 className="text-[#D4AF37] text-center text-[10px] font-black uppercase tracking-[0.4em] italic">
-            Testimonios de Bóveda Privada
+            Testimonios de Casos Asistidos
           </h2>
         </div>
         

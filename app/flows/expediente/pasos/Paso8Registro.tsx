@@ -1,14 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Users, Fingerprint, Mail, Phone, Loader2, AlertCircle } from "lucide-react";
+import { Users, Fingerprint, Mail, Phone, Loader2, AlertCircle, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { PasoProps } from "../expediente.types";
 import { client } from "@/sanity/lib/client";
+import { useRouter } from "next/navigation";
 
 export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficial, cargando }: PasoProps) {
   const [errores, setErrores] = useState<{ cedula?: string; email?: string }>({});
   const [validando, setValidando] = useState(false);
+  const router = useRouter();
 
-  // 🛡️ EFECTO DE VALIDACIÓN CRUZADA (Clientes + Abogados)
+  // 🛡️ EFECTO DE VALIDACIÓN CRUZADA (Identificación de Recurrencia)
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       if (seleccion.cedula || seleccion.email) {
@@ -22,7 +24,7 @@ export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficia
               `*[(_type == "cliente" || _type == "abogado") && cedula == $cedula][0]`,
               { cedula: seleccion.cedula }
             );
-            if (existeCedula) nuevosErrores.cedula = "🚨 Documento ya registrado en el sistema.";
+            if (existeCedula) nuevosErrores.cedula = "Identidad reconocida en el sistema oficial.";
           }
 
           // Validar Email
@@ -31,7 +33,7 @@ export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficia
               `*[(_type == "cliente" || _type == "abogado") && email == $email][0]`,
               { email: seleccion.email }
             );
-            if (existeEmail) nuevosErrores.email = "🚨 Este correo ya está en uso.";
+            if (existeEmail) nuevosErrores.email = "Correo electrónico vinculado a una cuenta activa.";
           }
 
           setErrores(nuevosErrores);
@@ -41,13 +43,21 @@ export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficia
           setValidando(false);
         }
       }
-    }, 600); // Espera 600ms después de que el usuario deja de escribir
+    }, 600);
 
     return () => clearTimeout(delayDebounce);
   }, [seleccion.cedula, seleccion.email]);
 
-  // Bloquear el botón si hay errores o está validando
-  const hayErrores = Object.keys(errores).length > 0;
+  // 💡 LÓGICA DE BLOQUEO INTELIGENTE:
+  // Permitimos avanzar solo si los errores son de recurrencia (Dorado), no si son errores reales.
+  const hayErroresBloqueantes = Object.keys(errores).some(key => {
+    const msg = errores[key as keyof typeof errores];
+    if (key === 'email' && msg?.includes("vinculado")) return false;
+    if (key === 'cedula' && msg?.includes("reconocida")) return false;
+    return true;
+  });
+
+  const hayErroresVisuales = Object.keys(errores).length > 0;
 
   return (
     <div className="w-full max-w-2xl animate-in zoom-in-95 duration-500 relative overflow-hidden">
@@ -69,55 +79,64 @@ export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficia
             { icon: Mail, placeholder: "Correo Electrónico", key: "email", type: "email" },
             { icon: Phone, placeholder: "WhatsApp", key: "telefono", type: "tel" }
           ].map(field => {
-            const tieneError = errores[field.key as keyof typeof errores];
+            const msgError = errores[field.key as keyof typeof errores];
+            const esRecurrente = msgError && (msgError.includes("reconocida") || msgError.includes("vinculado"));
+            
             return (
               <div key={field.key} className="relative group">
                 <div className="flex items-center justify-between mb-1 px-2">
                    <label className="text-[9px] font-black text-slate-400 uppercase italic tracking-widest">{field.placeholder}</label>
-                   {tieneError && <AlertCircle size={12} className="text-red-500 animate-pulse" />}
+                   {msgError && (
+                     esRecurrente ? <CheckCircle2 size={12} className="text-[#D4AF37]" /> : <AlertCircle size={12} className="text-red-500 animate-pulse" />
+                   )}
                 </div>
                 <div className="relative">
-                  <field.icon className={`absolute left-5 top-1/2 -translate-y-1/2 ${tieneError ? 'text-red-500' : 'text-[#D4AF37]'}`} size={18} />
+                  <field.icon className={`absolute left-5 top-1/2 -translate-y-1/2 ${msgError ? (esRecurrente ? 'text-[#D4AF37]' : 'text-red-500') : 'text-[#D4AF37]'}`} size={18} />
                   <input
                     required
                     type={field.type}
                     value={seleccion[field.key as keyof typeof seleccion] || ""}
                     className={`w-full p-5 pl-14 bg-white border-4 rounded-2xl outline-none font-black text-xs transition-all shadow-md placeholder:text-slate-300 ${
-                      tieneError 
-                        ? 'border-red-500 text-red-600 bg-red-50' 
+                      msgError 
+                        ? esRecurrente 
+                          ? 'border-[#D4AF37] text-[#D4AF37] bg-[#D4AF37]/5' 
+                          : 'border-red-500 text-red-600 bg-red-50' 
                         : 'border-[#D4AF37]/30 focus:border-[#D4AF37] text-slate-700'
                     }`}
                     onChange={e => setSeleccion({ ...seleccion, [field.key]: e.target.value })}
                   />
                 </div>
-                {tieneError && (
-                  <p className="text-[9px] text-red-500 font-bold mt-1 ml-2 uppercase italic">{tieneError}</p>
+                {msgError && (
+                  <p className={`text-[9px] font-bold mt-1 ml-2 uppercase italic ${esRecurrente ? 'text-[#D4AF37]' : 'text-red-500'}`}>
+                    {esRecurrente ? `✨ ${msgError}` : msgError}
+                  </p>
                 )}
               </div>
             );
           })}
         </div>
 
+        {/* 🏛️ BOTÓN ÚNICO DORADO (Sin botón negro de escape) */}
         <button
-          disabled={cargando || hayErrores || validando}
+          disabled={cargando || validando || hayErroresBloqueantes}
           onClick={finalizarRegistroOficial}
           className={`w-full mt-12 p-6 rounded-2xl font-black text-sm tracking-[0.2em] uppercase transition-all italic flex items-center justify-center gap-3 shadow-2xl border-2 border-white ${
-            (cargando || hayErrores || validando)
+            (cargando || validando || hayErroresBloqueantes)
               ? "bg-slate-200 text-slate-400 cursor-not-allowed opacity-70" 
               : "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] hover:scale-[1.02] active:scale-95 shadow-[#D4AF37]/40"
           }`}
         >
           {cargando ? (
             <><Loader2 className="animate-spin" /> CIFRANDO...</>
-          ) : hayErrores ? (
-            "DATOS INVÁLIDOS O DUPLICADOS"
+          ) : (hayErroresVisuales && !hayErroresBloqueantes) ? (
+            <><ShieldCheck size={18} /> VINCULAR A MI EXPEDIENTE GLOBAL</>
           ) : (
             "ACTIVAR MI DEFENSA OFICIAL"
           )}
         </button>
 
         <p className="mt-6 text-[8px] text-slate-400 font-bold uppercase tracking-widest opacity-60">
-          Sus datos están protegidos por el protocolo de cifrado ASF-2026
+          Sus datos están protegidos por el protocolo de cifrado TASF-2026
         </p>
       </div>
     </div>

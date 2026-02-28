@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tu Abogado Sin Fronteras",
-  description: "Servicios Jurídicos Premium en Venezuela",
+  description: "Servicios Jurídicos en Venezuela",
 };
 
 export default function RootLayout({

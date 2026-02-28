@@ -44,7 +44,7 @@ export function GestionarEvidencias({ casoSeleccionado }: Props) {
             </p>
             
             <p className="text-[7px] text-slate-400 font-black uppercase mt-3 tracking-widest">
-              Recibido vía Bóveda Digital ASF
+              Recibido vía Bóveda Digital TASF
             </p>
           </div>
         )}

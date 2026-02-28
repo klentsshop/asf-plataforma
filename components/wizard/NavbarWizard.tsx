@@ -14,6 +14,18 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
     return () => window.removeEventListener("resize", handle);
   }, []);
 
+  // Función de seguridad unificada para evitar errores y repetir código
+  const manejarAccesoAdmin = () => {
+    const pin = prompt("SEGURIDAD TASF: INGRESE PIN MAESTRO");
+    if (pin === process.env.NEXT_PUBLIC_ADMIN_PIN) { 
+      sessionStorage.setItem("asf_admin_auth", "true");
+      setMenuMovil(false); // Cierra el menú si está en móvil
+      router.push("/admin-master");
+    } else if (pin !== null) {
+      alert("ACCESO DENEGADO");
+    }
+  };
+
   if (width === null) return null;
   const isDesktop = width >= 1024;
   const HEADER_HEIGHT = 80; // h-20
@@ -35,7 +47,7 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
 
             <div className="flex flex-col text-left leading-none">
               <span className="font-black uppercase italic text-white tracking-tight text-lg sm:text-xl lg:text-3xl">
-                Abogados <span className="text-[#D4AF37]">Sin Fronteras</span>
+                Tu Abogado <span className="text-[#D4AF37]">Sin Fronteras</span>
               </span>
               <span className="text-[7px] sm:text-[8px] lg:text-[9px] font-bold text-[#D4AF37] tracking-[0.4em] uppercase italic opacity-80">
                 Venezuela cerca de Ti
@@ -67,7 +79,7 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
                   onClick={() => router.push('/boveda')}
                   className="bg-gradient-to-b from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] px-8 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest border-2 border-white italic"
                 >
-                  MI BÓVEDA
+                  MI USUARIO
                 </button>
 
                 <button
@@ -76,10 +88,18 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
                 >
                   SOY ABOGADO
                 </button>
+
+                {/* BOTÓN ADMIN MASTER - DESKTOP */}
+                <button
+                  onClick={manejarAccesoAdmin}
+                  className="bg-gradient-to-b from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] px-8 py-2.5 rounded-full text-[11px] font-black uppercase tracking-widest border-2 border-white italic shadow-lg hover:brightness-110 transition-all active:scale-95"
+                >
+                  ADMIN
+                </button>
               </div>
             )}
 
-            {/* MÓVIL */}
+            {/* BOTÓN HAMBURGUESA MÓVIL */}
             {!isDesktop && (
               <button 
                 onClick={() => setMenuMovil(!menuMovil)}
@@ -97,26 +117,34 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
         <>
           <div
             onClick={() => setMenuMovil(false)}
-            className="fixed inset-0 z-[50] bg-black/30"
+            className="fixed inset-0 z-[50] bg-black/30 animate-fade-in"
           />
 
-          {/* MENÚ BAJO HEADER */}
+          {/* MENÚ BAJO HEADER: Cambiado de 'fixed' a 'absolute' */}
           <div
-            className="fixed z-[70] left-0 w-full bg-[#0f0f0f] border-b border-[#D4AF37]/40 shadow-lg px-3 py-3 flex flex-col gap-2"
-            style={{ top: HEADER_HEIGHT }}
+            className="absolute z-[70] left-0 w-full bg-[#0f0f0f] border-b-4 border-[#D4AF37] shadow-2xl px-4 py-6 flex flex-col gap-3 animate-slide-down"
+            style={{ top: HEADER_HEIGHT }} // Se posiciona justo debajo de la barra h-20
           >
             <button
               onClick={() => { router.push('/boveda'); setMenuMovil(false); }}
-              className="text-[#D4AF37] text-[11px] font-bold uppercase tracking-widest py-2 px-3 rounded-md border border-[#D4AF37]/40 hover:bg-[#D4AF37] hover:text-black transition"
+              className="text-[#D4AF37] text-[12px] font-black uppercase tracking-[0.2em] py-4 px-4 rounded-xl border-2 border-[#D4AF37]/20 hover:bg-[#D4AF37] hover:text-black transition-all italic text-left"
             >
-              Mi Bóveda
+              Mi Usuario
             </button>
 
             <button
               onClick={() => { router.push('/login-abogado'); setMenuMovil(false); }}
-              className="text-[#D4AF37] text-[11px] font-bold uppercase tracking-widest py-2 px-3 rounded-md border border-[#D4AF37]/40 hover:bg-[#D4AF37] hover:text-black transition"
+              className="text-[#D4AF37] text-[12px] font-black uppercase tracking-[0.2em] py-4 px-4 rounded-xl border-2 border-[#D4AF37]/20 hover:bg-[#D4AF37] hover:text-black transition-all italic text-left"
             >
               Soy Abogado
+            </button>
+
+            {/* BOTÓN ADMIN MASTER */}
+            <button
+              onClick={manejarAccesoAdmin}
+              className="mt-2 bg-[#D4AF37] text-[#1a1a1a] text-[12px] font-black uppercase tracking-[0.2em] py-4 px-4 rounded-xl border-2 border-white transition-all italic text-left shadow-lg"
+            >
+              Acceso Master Admin
             </button>
           </div>
         </>

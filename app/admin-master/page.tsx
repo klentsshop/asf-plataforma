@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react"; // Añadido useRef para persistencia de datos
+import { useRouter } from "next/navigation"; // Importado para la protección de ruta
 import { 
   ShieldCheck, Users, DollarSign, AlertCircle, 
   CheckCircle2, XCircle, Eye, Loader2, Scale, 
@@ -8,18 +9,32 @@ import {
   UserCheck, RefreshCw, Bell // Añadidos iconos para el refresh
 } from "lucide-react";
 import { client } from "@/sanity/lib/client";
-
+import { SeccionExpedientes } from "@/components/admin/SeccionExpedientes";
 export default function AdminMaster() {
+  const router = useRouter();
+  const [autorizado, setAutorizado] = useState(false);
   const [abogadosPendientes, setAbogadosPendientes] = useState<any[]>([]);
   const [pagosPendientes, setPagosPendientes] = useState<any[]>([]);
   const [casosHuerfanos, setCasosHuerfanos] = useState<any[]>([]);
   const [abogadosAprobados, setAbogadosAprobados] = useState<any[]>([]); 
   const [cargando, setCargando] = useState(true);
   const [casoEnMatch, setCasoEnMatch] = useState<string | null>(null);
-
+  const [pestanaActiva, setPestanaActiva] = useState<'operaciones' | 'expedientes'>('operaciones');
+  
   // --- NUEVOS ESTADOS PARA EL REFRESH ---
   const [segundos, setSegundos] = useState(60);
   const totalAnterior = useRef(0); // Para comparar si hay nuevos casos y sonar la campana
+  const [expedientesClientes, setExpedientesClientes] = useState<any[]>([]);
+  const [expedientesAbogados, setExpedientesAbogados] = useState<any[]>([]);
+  // --- CAPA DE SEGURIDAD MÁSTER ---
+  useEffect(() => {
+    const auth = sessionStorage.getItem("asf_admin_auth");
+    if (auth !== "true") {
+      router.replace("/");
+    } else {
+      setAutorizado(true);
+    }
+  }, [router]);
 
   const cargarDataMaestra = async (isAutoRefresh = false) => {
     try {
@@ -27,19 +42,50 @@ export default function AdminMaster() {
       if (!isAutoRefresh) setCargando(true);
 
       const abogQuery = `*[_type == "abogado" && estatus == "pendiente"] | order(_createdAt desc){
-        ..., "inpreUrl": pdfInpreabogado.asset->url
+        ..., "inpreUrl": pdfInpreabogado.asset->url,
+  "selfieUrl": fotoSelfieInpre.asset->url
       }`;
       const pagosQuery = `*[_type == "caso" && defined(comprobantePago) && pagoValidado != true]{
         ..., "comprobanteUrl": comprobantePago.asset->url
       }`;
-      const huerfanosQuery = `*[_type == "caso" && (estado == "analisis" || !defined(abogadoAsignado)) && !defined(respuestaAbogado)] | order(_createdAt desc)`;
+      const huerfanosQuery = `*[_type == "caso" && !defined(abogadoAsignado) && estado == "analisis" && !defined(respuestaAbogado)] | order(_createdAt desc)`;
       const aprobadosQuery = `*[_type == "abogado" && estatus == "aprobado"]{_id, nombre, especialidad, ubicacion}`;
-
-      const [abog, pagos, huerfanos, aprobados] = await Promise.all([
-        client.fetch(abogQuery),
-        client.fetch(pagosQuery),
-        client.fetch(huerfanosQuery),
-        client.fetch(aprobadosQuery)
+      const expedientesClientesQuery = `*[_type == "caso"] | order(_createdAt desc){
+  _id,
+  "nombreCliente": cliente->nombre,
+  categoria,
+  estado,
+  // ESTO TRAE EL NOMBRE DEL ABOGADO ASIGNADO AL CASO
+  "nombreAbogadoAsignado": abogadoAsignado->nombre,
+  "pruebas": documentosPrueba[]{ "url": asset->url, "nombre": nombreOriginal },
+  "boveda": documentosBoveda[]{ "url": asset->url, "nombre": nombreOriginal },
+  "pagoUrl": comprobantePago.asset->url
+}`;
+      const expedientesAbogadosQuery = `*[_type == "abogado"] | order(nombre asc){
+  _id, 
+  nombre, 
+  email, 
+  inpreabogado, 
+  estatus,
+  "inpreUrl": pdfInpreabogado.asset->url,
+  "selfieUrl": fotoSelfieInpre.asset->url, // 👈 ¡ESTA ES LA CLAVE!
+  "tituloUrl": titulo.asset->url,
+  "rifUrl": rif.asset->url,
+  
+  // ESTO BUSCA TODOS LOS CASOS DONDE ESTE ABOGADO ESTÁ ASIGNADO
+  "casosTotales": count(*[_type == "caso" && references(^._id)]),
+  "casosConcluidos": count(*[_type == "caso" && references(^._id) && estado == "concluido"])
+}`;
+      
+      
+      
+      const [abog, pagos, huerfanos, aprobados, expClientes, expAbog] = await Promise.all([
+      client.fetch(abogQuery),
+      client.fetch(pagosQuery),
+      client.fetch(huerfanosQuery),
+      client.fetch(aprobadosQuery),
+      client.fetch(expedientesClientesQuery),
+      client.fetch(expedientesAbogadosQuery)
       ]);
 
       // Lógica de sonido: Si la suma de pendientes es mayor que antes, suena la campana
@@ -54,6 +100,8 @@ export default function AdminMaster() {
       setPagosPendientes(pagos);
       setCasosHuerfanos(huerfanos);
       setAbogadosAprobados(aprobados);
+      setExpedientesClientes(expClientes); 
+      setExpedientesAbogados(expAbog);
     } catch (e) {
       console.error("Error cargando administración", e);
     } finally {
@@ -61,8 +109,10 @@ export default function AdminMaster() {
     }
   };
 
-  // --- CICLO DE VIDA DEL REFRESH ---
+  // --- CICLO DE VIDA DEL REFRESH (Solo si está autorizado) ---
   useEffect(() => {
+    if (!autorizado) return;
+
     cargarDataMaestra();
 
     const intervaloRefresco = setInterval(() => {
@@ -76,7 +126,10 @@ export default function AdminMaster() {
     }, 1000);
 
     return () => clearInterval(intervaloRefresco);
-  }, []);
+  }, [autorizado]);
+
+  // Si no está autorizado por el PIN, no renderizamos nada para evitar el "flicker" de datos sensibles
+  if (!autorizado) return null;
 
   const asignarManual = async (casoId: string, abogadoId: string, abogadoNombre: string) => {
     const confirmar = confirm(`¿Asignar este caso oficialmente al Abg. ${abogadoNombre}?`);
@@ -85,7 +138,7 @@ export default function AdminMaster() {
     try {
       await client.patch(casoId).set({
         abogadoAsignado: { _type: 'reference', _ref: abogadoId },
-        actualizacion: "SISTEMA: Caso asignado manualmente por coordinación ASF."
+        actualizacion: "SISTEMA: Caso asignado manualmente por coordinación TASF."
       }).commit();
       
       alert("Match manual exitoso.");
@@ -128,14 +181,14 @@ export default function AdminMaster() {
 };
 
   const validarPago = async (id: string) => {
-    const confirmacion = confirm("¿Confirma que el depósito ha sido verificado en la cuenta ASF?");
+    const confirmacion = confirm("¿Confirma que el depósito ha sido verificado en la cuenta TASF?");
     if (!confirmacion) return;
 
     try {
       await client.patch(id).set({ 
         pagoValidado: true, 
         estado: 'gestion',
-        actualizacion: "ASF: Pago validado. Su abogado ha iniciado la gestión oficial."
+        actualizacion: "TASF: Pago validado. Su abogado ha iniciado la gestión oficial."
       }).commit();
       
       alert("Pago validado exitosamente.");
@@ -156,24 +209,24 @@ export default function AdminMaster() {
     <main className="min-h-screen bg-[#F3F4F6] text-slate-800 p-8 font-sans selection:bg-[#D4AF37]">
       
       <header className="
-    max-w-7xl mx-auto
-    flex flex-col md:flex-row
-    justify-between items-start md:items-center
+        max-w-7xl mx-auto
+        flex flex-col md:flex-row
+        justify-between items-start md:items-center
 
-    mb-16
-    bg-white
+        mb-16
+        bg-white
 
-    /* MOBILE */
-    p-4 rounded-xl border-2
+        /* MOBILE */
+        p-4 rounded-xl border-2
 
-    /* DESKTOP */
-    p-6 md:p-10 md:rounded-full md:border-4
+        /* DESKTOP */
+        p-6 md:p-10 md:rounded-full md:border-4
 
-    shadow-2xl border-[#D4AF37]
-    relative overflow-hidden
-  "
->
+        shadow-2xl border-[#D4AF37]
+        relative overflow-hidden
+      ">
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl" />
+        
         <div className="flex items-center gap-8 text-left relative z-10">
           <button onClick={() => window.location.href = '/'} className="p-5 bg-[#1a1a1a] text-[#D4AF37] border-2 border-white rounded-full hover:scale-110 transition-all shadow-xl">
             <ChevronLeft size={28} />
@@ -187,48 +240,128 @@ export default function AdminMaster() {
           </div>
         </div>
 
+        {/* SELECTOR DE PESTAÑAS (TABS MAESTRO) */}
+        <div className="flex bg-slate-100 p-2 rounded-full border-2 border-slate-200 mt-6 md:mt-0 relative z-10 shadow-inner">
+          <button 
+            onClick={() => setPestanaActiva('operaciones')}
+            className={`px-8 py-3 rounded-full text-[10px] font-black uppercase italic tracking-widest transition-all duration-300 ${
+              pestanaActiva === 'operaciones' 
+                ? 'bg-[#1a1a1a] text-[#D4AF37] shadow-xl scale-105' 
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            Operaciones
+          </button>
+          <button 
+            onClick={() => setPestanaActiva('expedientes')}
+            className={`px-8 py-3 rounded-full text-[10px] font-black uppercase italic tracking-widest transition-all duration-300 ${
+              pestanaActiva === 'expedientes' 
+                ? 'bg-[#1a1a1a] text-[#D4AF37] shadow-xl scale-105' 
+                : 'text-slate-400 hover:text-slate-600'
+            }`}
+          >
+            Expedientes
+          </button>
+        </div>
+
         {/* CONTADORES */}
-        <div className="flex flex-wrap gap-4 mt-6 md:mt-0">
+        <div className="flex flex-wrap gap-4 mt-6 md:mt-0 relative z-10">
           <div className="bg-[#1a1a1a] px-8 py-4 rounded-full border-4 border-[#D4AF37]/30 flex items-center gap-4 shadow-2xl">
-            <div className="bg-[#D4AF37] p-2 rounded-full text-[#1a1a1a] border-2 border-white"><Bell size={18} className={segundos < 3 ? 'animate-bounce' : ''}/></div>
+            <div className="bg-[#D4AF37] p-2 rounded-full text-[#1a1a1a] border-2 border-white">
+              <Bell size={18} className={segundos < 3 ? 'animate-bounce' : ''}/>
+            </div>
             <div className="text-left">
               <p className="text-[8px] font-black text-[#D4AF37] uppercase italic leading-none mb-1">Total Pendientes</p>
-              <p className="text-2xl font-black text-white leading-none italic">{casosHuerfanos.length + pagosPendientes.length}</p>
+              <p className="text-2xl font-black text-white leading-none italic">
+                {casosHuerfanos.length + pagosPendientes.length}
+              </p>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12">
+      {/* VISTA 1: OPERACIONES (3 COLUMNAS) */}
+      {pestanaActiva === 'operaciones' && (
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-12 animate-in fade-in duration-500">
         
         {/* COLUMNA 1: ABOGADOS PENDIENTES */}
         <section className="space-y-10">
-          <div className="flex justify-center">
-            <div className="bg-[#1a1a1a] py-4 px-10 rounded-full border-4 border-[#D4AF37] shadow-2xl flex items-center gap-4">
-              <Users size={22} className="text-[#D4AF37]" /> 
-              <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-white italic">Credenciales ({abogadosPendientes.length})</h2>
-            </div>
+  <div className="flex justify-center">
+    <div className="bg-[#1a1a1a] py-4 px-10 rounded-full border-4 border-[#D4AF37] shadow-2xl flex items-center gap-4">
+      <Users size={22} className="text-[#D4AF37]" /> 
+      <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-white italic">
+        Validación de Credenciales ({abogadosPendientes.length})
+      </h2>
+    </div>
+  </div>
+
+  <div className="space-y-10">
+    {abogadosPendientes.map((abog) => (
+      <div key={abog._id} className="bg-white p-12 rounded-[4rem] border-4 border-[#D4AF37] shadow-2xl text-left transition-all hover:scale-[1.01] relative overflow-hidden">
+        
+        {/* ENCABEZADO: DATOS DEL ABOGADO */}
+        <div className="flex justify-between items-start mb-10">
+          <div className="text-left overflow-hidden">
+            <p className="font-black uppercase text-2xl italic text-[#1a1a1a] leading-none tracking-tighter truncate">
+              {abog.nombre}
+            </p>
+            <p className="text-[10px] text-[#D4AF37] font-black uppercase italic mt-5 tracking-widest bg-slate-50 px-6 py-3 rounded-full border-2 border-slate-100 inline-block">
+              Inpre: {abog.inpreabogado}
+            </p>
           </div>
-          <div className="space-y-10">
-            {abogadosPendientes.map((abog) => (
-              <div key={abog._id} className="bg-white p-12 rounded-[4rem] border-4 border-[#D4AF37] shadow-2xl text-left transition-all hover:scale-[1.02] relative">
-                <div className="flex justify-between items-start mb-10">
-                  <div className="text-left overflow-hidden">
-                    <p className="font-black uppercase text-2xl italic text-[#1a1a1a] leading-none tracking-tighter truncate">{abog.nombre}</p>
-                    <p className="text-[10px] text-[#D4AF37] font-black uppercase italic mt-5 tracking-widest bg-slate-50 px-6 py-3 rounded-full border-2 border-slate-100 inline-block">Inpre: {abog.inpreabogado}</p>
-                  </div>
-                  {abog.inpreUrl && (
-                    <a href={abog.inpreUrl} target="_blank" className="p-5 bg-[#1a1a1a] text-[#D4AF37] rounded-full hover:bg-[#D4AF37] hover:text-[#1a1a1a] transition-all border-2 border-white shadow-xl"><Eye size={24}/></a>
-                  )}
-                </div>
-                <div className="flex gap-4">
-                  <button onClick={() => aprobarAbogado(abog._id, abog.email, abog.nombre)} className="flex-1 bg-[#1a1a1a] text-[#D4AF37] py-6 rounded-full text-[11px] font-black uppercase italic tracking-widest shadow-xl border-2 border-[#D4AF37] transition-all hover:scale-105 active:scale-95">Aprobar</button>
-                  <button className="flex-1 bg-white text-slate-300 py-6 rounded-full text-[11px] font-black uppercase italic tracking-widest border-2 border-slate-100 transition-all hover:text-red-500">Rechazar</button>
-                </div>
+          <div className="bg-[#D4AF37]/10 px-4 py-2 rounded-2xl border border-[#D4AF37]/20">
+             <p className="text-[8px] font-black text-[#D4AF37] uppercase tracking-widest">Estatus: Pendiente</p>
+          </div>
+        </div>
+
+        {/* 🏛️ PANEL DE COMPARACIÓN BIOMÉTRICA (NUEVO) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+          
+          {/* Foto 1: El Carnet */}
+          <div className="space-y-3">
+            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest italic">1. Documento Oficial (INPRE)</p>
+            <a href={abog.inpreUrl} target="_blank" className="block group relative aspect-video rounded-3xl overflow-hidden border-2 border-slate-100 shadow-inner bg-slate-50">
+              <img src={abog.inpreUrl} alt="Carnet" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-[#1a1a1a]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Eye size={30} className="text-[#D4AF37]" />
               </div>
-            ))}
+            </a>
           </div>
-        </section>
+
+          {/* Foto 2: La Selfie */}
+          <div className="space-y-3">
+            <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest italic">2. Validación de Identidad (Selfie)</p>
+            <a href={abog.selfieUrl} target="_blank" className="block group relative aspect-video rounded-3xl overflow-hidden border-2 border-slate-100 shadow-inner bg-slate-50">
+              {abog.selfieUrl ? (
+                <img src={abog.selfieUrl} alt="Selfie" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-slate-100 text-[8px] font-black text-slate-400 uppercase tracking-widest">Sin Selfie cargada</div>
+              )}
+              <div className="absolute inset-0 bg-[#1a1a1a]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Eye size={30} className="text-[#D4AF37]" />
+              </div>
+            </a>
+          </div>
+          
+        </div>
+
+        {/* ACCIONES */}
+        <div className="flex gap-4">
+          <button 
+            onClick={() => aprobarAbogado(abog._id, abog.email, abog.nombre)} 
+            className="flex-1 bg-[#1a1a1a] text-[#D4AF37] py-6 rounded-full text-[11px] font-black uppercase italic tracking-widest shadow-xl border-2 border-[#D4AF37] transition-all hover:bg-[#D4AF37] hover:text-[#1a1a1a] hover:scale-105 active:scale-95"
+          >
+            Aprobar Credenciales
+          </button>
+          <button className="flex-1 bg-white text-slate-300 py-6 rounded-full text-[11px] font-black uppercase italic tracking-widest border-2 border-slate-100 transition-all hover:text-red-600 hover:border-red-100">
+            Rechazar
+          </button>
+        </div>
+
+      </div>
+    ))}
+  </div>
+</section>
 
         {/* COLUMNA 2: VERIFICACIÓN DE PAGOS */}
         <section className="space-y-10">
@@ -311,9 +444,26 @@ export default function AdminMaster() {
           </div>
         </section>
       </div>
-
+      )}
+      {/* VISTA 2: EXPEDIENTES Y SOPORTES */}
+      {pestanaActiva === 'expedientes' && (
+        <div className="max-w-7xl mx-auto animate-in slide-in-from-bottom-4 duration-500">
+          {/* Este es el componente que acabamos de crear con toda la lógica visual */}
+          <SeccionExpedientes 
+            clientes={expedientesClientes} 
+            abogados={expedientesAbogados} 
+          />
+          
+          {/* Footer interno de la sección para dar contexto (Opcional, muy discreto) */}
+          <div className="mt-8 text-center">
+            <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.4em] italic">
+              Base de Datos Auditada: {expedientesClientes.length} Clientes | {expedientesAbogados.length} Abogados
+            </p>
+          </div>
+        </div>
+      )}
       <footer className="mt-24 py-12 border-t-4 border-[#D4AF37]/10 text-center">
-        <p className="text-slate-400 text-[10px] font-black tracking-[0.6em] uppercase italic">Control Maestro • ASF Venezuela • 2026</p>
+        <p className="text-slate-400 text-[10px] font-black tracking-[0.6em] uppercase italic">Control Maestro • TASF Venezuela • 2026</p>
       </footer>
     </main>
   );

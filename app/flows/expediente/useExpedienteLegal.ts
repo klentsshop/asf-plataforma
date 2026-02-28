@@ -90,17 +90,24 @@ export function useExpedienteLegal(
         throw new Error("Sanity no pudo vincular al cliente.");
       }
 
+      // CORRECCIÓN PARA RECURRENTE: Usamos el código que devuelve Sanity (ej. TASF-008)
+      const codigoReal = link.codigoPremium || notificacion.codigoExpediente;
+
       // 2. Notificación Oficial (Resend / API Send)
       const resp = await enviarCorreoBoveda({
         email: seleccion.email,
         nombre: seleccion.nombre,
         casoId,
-        codigoExpediente: notificacion.codigoExpediente
+        codigoExpediente: codigoReal
       });
 
       if (!resp.ok) {
         console.error("❌ ERROR /api/send:", resp.data.error || "Desconocido");
       }
+
+      // BLINDAJE DE IDENTIDAD PARA LA BÓVEDA: Evita cargar casos viejos
+      sessionStorage.setItem("asf_id", casoId); 
+      sessionStorage.setItem("asf_email", seleccion.email);
 
       // 3. Limpieza de Seguridad
       StorageCaso.setEmail(seleccion.email);

@@ -13,9 +13,9 @@ export async function POST(request: Request) {
     const safeNombre = nombre || "Cliente"
 
     const data = await resend.emails.send({
-      from: 'ASF Gestión <gestion@klentsshop.com>',
+      from: 'TASF Gestión <gestion@tuabogadosinfronteras.com>',
       to: email,
-      subject: `🏛️ REQUERIMIENTO LEGAL: Acción necesaria en su Bóveda`,
+      subject: `🏛️ REQUERIMIENTO LEGAL: Acción necesaria en su Usuario`,
       html: `
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #111111; font-family: Arial, sans-serif;">
           <tr>
@@ -24,10 +24,10 @@ export async function POST(request: Request) {
                 <tr>
                   <td align="center" style="padding: 40px 20px 20px 20px;">
                     <div style="background-color: #D4AF37; display: inline-block; padding: 10px; border-radius: 8px; margin-bottom: 20px;">
-                      <img src="https://cdn-icons-png.flaticon.com/512/1048/1048953.png" width="40" height="40" alt="ASF">
+                      <img src="https://cdn-icons-png.flaticon.com/512/1048/1048953.png" width="40" height="40" alt="TASF">
                     </div>
                     <h2 style="color: #D4AF37; margin: 0; font-size: 20px; text-transform: uppercase; letter-spacing: 2px;">Notificación de Avance</h2>
-                    <p style="color: #ffffff; font-size: 10px; text-transform: uppercase; letter-spacing: 4px; margin-top: 5px; opacity: 0.8;">Departamento Legal ASF</p>
+                    <p style="color: #ffffff; font-size: 10px; text-transform: uppercase; letter-spacing: 4px; margin-top: 5px; opacity: 0.8;">Departamento Legal TASF</p>
                   </td>
                 </tr>
                 <tr>
@@ -43,11 +43,11 @@ export async function POST(request: Request) {
                     </div>
 
                     <p style="color: #cccccc; font-size: 13px; line-height: 1.8;">
-                      Por favor, ingrese a su Bóveda Privada para cargar los documentos solicitados o responder a esta solicitud.
+                      Por favor, ingrese a su Usuario para cargar los documentos solicitados o responder a esta solicitud.
                     </p>
 
                     <div style="margin-top: 40px; text-align: center; padding-bottom: 20px;">
-                      <a href="https://abogadosinfrnteras.netlify.app/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 12px; text-transform: uppercase;">ACCEDER A MI BÓVEDA</a>
+                      <a href="https://abogadosinfrnteras.netlify.app/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 12px; text-transform: uppercase;">ACCEDER A MI USUARIO</a>
                     </div>
                   </td>
                 </tr>

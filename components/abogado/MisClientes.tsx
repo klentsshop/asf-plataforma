@@ -52,7 +52,7 @@ export function MisClientes({ cargando, clientesActivos, manejarGestionar }: Mis
                   onClick={() => manejarGestionar(c)}
                   className="flex-1 bg-[#1a1a1a] text-[#D4AF37] py-4 rounded-2xl text-[9px] font-black uppercase italic tracking-widest hover:bg-black transition-all active:scale-95 shadow-lg"
                 >
-                  Gestionar Bóveda
+                  Gestionar Usuario
                 </button>
 
                 <button

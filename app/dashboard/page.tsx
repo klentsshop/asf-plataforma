@@ -62,8 +62,8 @@ export default function AbogadoDashboard() {
         setCargando(true);
         if (vista === "bandeja") {
           const d = await client.fetch(
-            `*[_type == "caso" && estado == "analisis" && categoria == $esp && ubicacion == $ub && !defined(respuestaAbogado)] | order(_createdAt desc)`,
-            { esp: abogadoInfo.especialidad, ub: abogadoInfo.ubicacion }
+            `*[_type == "caso" && estado == "analisis" && ((categoria == $esp && ubicacion == $ub) || abogadoAsignado._ref == $id) && !defined(respuestaAbogado)] | order(_createdAt desc)`,
+            { esp: abogadoInfo.especialidad, ub: abogadoInfo.ubicacion, id: abogadoInfo.id }
           );
           setCasos(d);
         } else if (vista === "clientes") {
@@ -142,7 +142,7 @@ export default function AbogadoDashboard() {
 
     try {
       setCargando(true);
-      const statusInstitucional = `Actualización ASF: ${mensajeLegal}`;
+      const statusInstitucional = `Actualización TASF: ${mensajeLegal}`;
       
       await client.patch(casoSeleccionado._id)
         .set({
@@ -158,7 +158,7 @@ export default function AbogadoDashboard() {
       setVista("clientes");
     } catch (error) {
       console.error("Error sincronizando Sanity:", error);
-      alert("Error crítico al sincronizar con la Bóveda.");
+      alert("Error crítico al sincronizar Usuario.");
     } finally {
       setCargando(false);
     }
