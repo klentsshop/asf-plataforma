@@ -19,10 +19,8 @@ export async function POST(request: Request) {
     const displayID = codigoExpediente || casoId
 
     const data = await resend.emails.send({
-      // **IMPORTANTE: dominio verificado**
-      from: 'gestion@tuabogadosinfronteras.com',
-      // si quieres el nombre, debe ir así:
-      // from: 'Tu Abogado Sin Fronteras <gestion@tuabogadosinfronteras.com>',
+      // ✅ Dominio verificado y nombre oficial
+      from: 'Tu Abogado Sin Fronteras <gestion@tuabogadosinfronteras.com>',
       to: email,
       subject: `Expediente Oficial TASF: ${displayID}`,
       html: `
@@ -51,22 +49,40 @@ export async function POST(request: Request) {
                       <span style="color: #ffffff; font-size: 26px; font-weight: bold; letter-spacing: 2px;">${displayID}</span>
                     </div>
 
-                    <p style="color: #ffffff; font-size: 14px; font-weight: bold; margin-top: 30px;">Instrucciones de Seguridad:</p>
+                    <p style="color: #ffffff; font-size: 14px; font-weight: bold; margin-top: 30px; text-transform: uppercase; letter-spacing: 1px;">⚠️ Próximo Paso Obligatorio:</p>
+                    <p style="color: #cccccc; font-size: 13px; line-height: 1.6;">
+                      Una vez que tenga sus credenciales, debe realizar el pago de su defensa legal personal a través de los canales autorizados TASF:
+                    </p>
+
+                    <div style="margin: 20px 0; padding: 20px; background-color: #111; border-left: 4px solid #D4AF37; border-radius: 4px;">
+                      <p style="color: #D4AF37; font-size: 12px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">Banco de Venezuela (Corriente)</p>
+                      <p style="color: #ffffff; font-size: 13px; margin: 0;">Titular: <strong>Liz Pineda</strong></p>
+                      <p style="color: #ffffff; font-size: 13px; margin: 0;">C.I: <strong>16.268.588</strong></p>
+                      <p style="color: #D4AF37; font-size: 14px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">0102 0215 9100 0022 8578</p>
+                      
+                      <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                        <p style="color: #D4AF37; font-size: 12px; font-weight: bold; margin-bottom: 10px; text-transform: uppercase;">Bancolombia (Ahorros)</p>
+                        <p style="color: #ffffff; font-size: 13px; margin: 0;">Titular: <strong>Liz Pineda</strong></p>
+                        <p style="color: #ffffff; font-size: 13px; margin: 0;">Pasaporte: <strong>5005042972</strong></p>
+                        <p style="color: #D4AF37; font-size: 14px; font-weight: bold; margin-top: 5px; letter-spacing: 1px;">1080 0008 109</p>
+                      </div>
+                    </div>
+
                     <ul style="color: #cccccc; font-size: 13px; line-height: 1.8; padding-left: 20px;">
-                      <li>Utilice su correo y el ID arriba mencionado para entrar a su Usuario.</li>
-                      <li>Dentro de su usuario podrá cargar pruebas y descargar documentos oficiales.</li>
+                      <li>Utilice su correo y el ID para entrar a su Usuario.</li>
+                      <li>Dentro de su cuenta deberá <strong>cargar el comprobante de pago</strong>.</li>
                       <li>Este código es personal e intransferible.</li>
                     </ul>
 
-                    <div style="margin-top: 30px; text-align: center;">
-                      <a href="https://abogadosinfrnteras.netlify.app/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase;">Entrar a mi Usuario</a>
+                    <div style="margin-top: 35px; text-align: center;">
+                      <a href="https://tuabogadosinfronteras.com/boveda" style="background-color: #D4AF37; color: #000000; padding: 18px 35px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">Entrar a mi Usuario</a>
                     </div>
                   </td>
                 </tr>
                 <tr>
                   <td align="center" style="padding: 25px; background-color: #111; border-top: 1px solid #333;">
                     <p style="color: #666; font-size: 10px; margin: 0;">© 2026 Tu Abogado Sin Fronteras Venezuela</p>
-                    <p style="color: #444; font-size: 8px; margin-top: 5px; text-transform: uppercase;">ID Interno: ${casoId}</p>
+                    <p style="color: #444; font-size: 8px; margin-top: 5px; text-transform: uppercase;">Expediente: ${displayID} | ID Interno: ${casoId}</p>
                   </td>
                 </tr>
               </table>

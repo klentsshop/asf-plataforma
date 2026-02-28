@@ -208,45 +208,47 @@ export default function AdminMaster() {
   return (
     <main className="min-h-screen bg-[#F3F4F6] text-slate-800 p-8 font-sans selection:bg-[#D4AF37]">
       
-      <header className="
+     <header className="
         max-w-7xl mx-auto
-        flex flex-col md:flex-row
-        justify-between items-start md:items-center
-
-        mb-16
+        flex flex-col lg:flex-row
+        justify-between items-center
+        mb-10 lg:mb-16
         bg-white
-
-        /* MOBILE */
-        p-4 rounded-xl border-2
-
-        /* DESKTOP */
-        p-6 md:p-10 md:rounded-full md:border-4
-
+        p-6 lg:p-10 
+        rounded-[2.5rem] lg:rounded-full 
+        border-4
         shadow-2xl border-[#D4AF37]
         relative overflow-hidden
       ">
+        {/* DECORACIÓN DE FONDO */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#D4AF37]/5 rounded-full -mr-32 -mt-32 blur-3xl" />
         
-        <div className="flex items-center gap-8 text-left relative z-10">
-          <button onClick={() => window.location.href = '/'} className="p-5 bg-[#1a1a1a] text-[#D4AF37] border-2 border-white rounded-full hover:scale-110 transition-all shadow-xl">
+        {/* BLOQUE DE TÍTULO (Centrado en móvil, a la izquierda en escritorio) */}
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left relative z-10 w-full md:w-auto">
+          <button 
+            onClick={() => window.location.href = '/'} 
+            className="hidden md:flex p-5 bg-[#1a1a1a] text-[#D4AF37] border-2 border-white rounded-full hover:scale-110 transition-all shadow-xl"
+          >
             <ChevronLeft size={28} />
           </button>
-          <div className="text-left">
-            <h1 className="text-4xl font-black uppercase italic tracking-tighter text-[#1a1a1a] leading-none">Master <span className="text-[#D4AF37]">Control</span></h1>
-            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.5em] mt-3 italic flex items-center gap-2">
+          <div className="flex flex-col items-center md:items-start">
+            <h1 className="text-2xl md:text-4xl font-black uppercase italic tracking-tighter text-[#1a1a1a] leading-none">
+              Master <span className="text-[#D4AF37]">Control</span>
+            </h1>
+            <p className="text-slate-400 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.5em] mt-3 italic flex items-center gap-2">
               <RefreshCw size={10} className={`animate-spin ${segundos < 5 ? 'text-[#D4AF37]' : ''}`} />
-              Sincronización en {segundos}s
+              Sincronización {segundos}s
             </p>
           </div>
         </div>
 
-        {/* SELECTOR DE PESTAÑAS (TABS MAESTRO) */}
-        <div className="flex bg-slate-100 p-2 rounded-full border-2 border-slate-200 mt-6 md:mt-0 relative z-10 shadow-inner">
+        {/* SELECTOR DE PESTAÑAS (Ocupa el ancho completo en móvil para que no se corte) */}
+        <div className="flex w-full md:w-auto bg-slate-100 p-1.5 rounded-2xl md:rounded-full border-2 border-slate-200 mt-6 lg:mt-0 relative z-10 shadow-inner">
           <button 
             onClick={() => setPestanaActiva('operaciones')}
-            className={`px-8 py-3 rounded-full text-[10px] font-black uppercase italic tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-4 md:px-8 py-3 rounded-xl md:rounded-full text-[9px] md:text-[10px] font-black uppercase italic tracking-widest transition-all duration-300 ${
               pestanaActiva === 'operaciones' 
-                ? 'bg-[#1a1a1a] text-[#D4AF37] shadow-xl scale-105' 
+                ? 'bg-[#1a1a1a] text-[#D4AF37] shadow-xl scale-100 md:scale-105' 
                 : 'text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -254,9 +256,9 @@ export default function AdminMaster() {
           </button>
           <button 
             onClick={() => setPestanaActiva('expedientes')}
-            className={`px-8 py-3 rounded-full text-[10px] font-black uppercase italic tracking-widest transition-all duration-300 ${
+            className={`flex-1 md:flex-none px-4 md:px-8 py-3 rounded-xl md:rounded-full text-[9px] md:text-[10px] font-black uppercase italic tracking-widest transition-all duration-300 ${
               pestanaActiva === 'expedientes' 
-                ? 'bg-[#1a1a1a] text-[#D4AF37] shadow-xl scale-105' 
+                ? 'bg-[#1a1a1a] text-[#D4AF37] shadow-xl scale-100 md:scale-105' 
                 : 'text-slate-400 hover:text-slate-600'
             }`}
           >
@@ -264,15 +266,15 @@ export default function AdminMaster() {
           </button>
         </div>
 
-        {/* CONTADORES */}
-        <div className="flex flex-wrap gap-4 mt-6 md:mt-0 relative z-10">
-          <div className="bg-[#1a1a1a] px-8 py-4 rounded-full border-4 border-[#D4AF37]/30 flex items-center gap-4 shadow-2xl">
+        {/* CONTADORES (Total Pendientes) */}
+        <div className="flex flex-wrap gap-4 mt-6 lg:mt-0 relative z-10 justify-center">
+          <div className="bg-[#1a1a1a] px-6 md:px-8 py-4 rounded-full border-4 border-[#D4AF37]/30 flex items-center gap-4 shadow-2xl">
             <div className="bg-[#D4AF37] p-2 rounded-full text-[#1a1a1a] border-2 border-white">
               <Bell size={18} className={segundos < 3 ? 'animate-bounce' : ''}/>
             </div>
             <div className="text-left">
-              <p className="text-[8px] font-black text-[#D4AF37] uppercase italic leading-none mb-1">Total Pendientes</p>
-              <p className="text-2xl font-black text-white leading-none italic">
+              <p className="text-[7px] md:text-[8px] font-black text-[#D4AF37] uppercase italic leading-none mb-1">Total Pendientes</p>
+              <p className="text-xl md:text-2xl font-black text-white leading-none italic">
                 {casosHuerfanos.length + pagosPendientes.length}
               </p>
             </div>

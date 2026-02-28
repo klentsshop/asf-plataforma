@@ -12,7 +12,7 @@ import { BovedaStatusBar } from "../../components/cliente/BovedaStatusBar";
 import { BovedaLegal } from "../../components/cliente/BovedaLegal";
 import { BovedaRepositorio } from "../../components/cliente/BovedaRepositorio";
 import { BovedaHistorial } from "../../components/cliente/BovedaHistorial";
-import { BovedaUpload } from "../../components/cliente/BovedaUpload";
+//import { BovedaUpload } from "../../components/cliente/BovedaUpload";
 import { BovedaFooter } from "../../components/cliente/BovedaFooter";
 
 export default function BovedaPage() {
@@ -272,9 +272,8 @@ export default function BovedaPage() {
           />
         </div>
 
-        <div className="space-y-8">
+        *<div className="space-y-8">
           <BovedaRepositorio datosCaso={datosCaso} />
-          <BovedaUpload subiendoArchivo={subiendoArchivo} manejarCargaArchivo={manejarCargaArchivo} />
           <BovedaHistorial datosCaso={datosCaso} />
         </div>
       </div>

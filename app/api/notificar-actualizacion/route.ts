@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     const safeNombre = nombre || "Cliente"
 
     const data = await resend.emails.send({
+      // ✅ ACTUALIZADO: Remitente profesional con dominio verificado
       from: 'TASF Gestión <gestion@tuabogadosinfronteras.com>',
       to: email,
       subject: `🏛️ REQUERIMIENTO LEGAL: Acción necesaria en su Usuario`,
@@ -47,7 +48,7 @@ export async function POST(request: Request) {
                     </p>
 
                     <div style="margin-top: 40px; text-align: center; padding-bottom: 20px;">
-                      <a href="https://abogadosinfrnteras.netlify.app/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 12px; text-transform: uppercase;">ACCEDER A MI USUARIO</a>
+                      <a href="https://tuabogadosinfronteras.com/boveda" style="background-color: #D4AF37; color: #000000; padding: 15px 40px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 12px; text-transform: uppercase;">ACCEDER A MI USUARIO</a>
                     </div>
                   </td>
                 </tr>

@@ -5,11 +5,12 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    // Desestructuración con los datos necesarios para el mensaje
+    // Desestructuración con los datos necesarios para el mensaje (Lógica Original)
     const { email, nombre, inpre, ubicacion } = await request.json();
 
     const data = await resend.emails.send({
-      from: 'gestion@tuabogadosinfronteras.com',
+      // ✅ ACTUALIZADO: Identidad oficial bajo el dominio verificado
+      from: 'Tu Abogado Sin Fronteras <gestion@tuabogadosinfronteras.com>',
       to: [email],
       subject: `Postulación Recibida: Abg. ${nombre}`,
       html: `

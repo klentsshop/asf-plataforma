@@ -8,16 +8,17 @@ export async function POST(request: Request) {
     // Sanity envía el cuerpo del documento en la petición
     const body = await request.json();
     
-    // Extraemos los datos necesarios del documento de Sanity
+    // Extraemos los datos necesarios del documento de Sanity (Lógica Original)
     const { email, nombre, password } = body;
 
-    // Validación de seguridad para evitar envíos vacíos
+    // Validación de seguridad para evitar envíos vacíos (Original)
     if (!email || !password) {
       return NextResponse.json({ error: "Datos insuficientes" }, { status: 400 });
     }
 
     const data = await resend.emails.send({
-      from: 'gestion@tuabogadosinfronteras.com', // Asegúrate de que este dominio esté verificado en Resend
+      // ✅ ACTUALIZADO: Identidad profesional + Dominio verificado
+      from: 'Tu Abogado Sin Fronteras <gestion@tuabogadosinfronteras.com>', 
       to: [email],
       subject: `⚖️ Acceso Concedido: Bienvenido a la Red TASF`,
       html: `
@@ -60,13 +61,13 @@ export async function POST(request: Request) {
 
                     <p style="color: #D4AF37; font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px;">PRÓXIMO PASO:</p>
                     <p style="color: #888888; font-size: 13px; line-height: 1.6; text-align: center;">
-                      Inicie sesión en su panel y <strong>cambie su contraseña</strong> en la sección de configuración por razones de seguridad.
+                      Inicie sesión en <strong>tuabogadosinfronteras.com</strong> y cambie su contraseña en la sección de configuración por razones de seguridad.
                     </p>
                   </td>
                 </tr>
                 <tr>
                   <td align="center" style="padding: 30px; background-color: #0d0d0d; border-top: 1px solid #222222;">
-                    <p style="color: #444444; font-size: 10px; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Seguridad TASF Cripto-Blindada 2026</p>
+                    <p style="color: #444444; font-size: 10px; margin: 0; text-transform: uppercase; letter-spacing: 2px;">Seguridad TASF • Dominio Oficial 2026</p>
                   </td>
                 </tr>
               </table>
