@@ -97,6 +97,7 @@ export function BovedaLegal({
           <MuroGestionCliente 
             onSend={enviarMensajeAlAbogado} 
             cargando={subiendoArchivo} 
+            pagoValidado={datosCaso?.pagoValidado}
           />
         )}
 

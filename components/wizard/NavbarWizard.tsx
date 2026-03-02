@@ -144,7 +144,7 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
               onClick={manejarAccesoAdmin}
               className="mt-2 bg-[#D4AF37] text-[#1a1a1a] text-[12px] font-black uppercase tracking-[0.2em] py-4 px-4 rounded-xl border-2 border-white transition-all italic text-left shadow-lg"
             >
-              Acceso Master Admin
+              Admin
             </button>
           </div>
         </>

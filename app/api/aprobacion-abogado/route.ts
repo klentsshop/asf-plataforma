@@ -5,64 +5,86 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(request: Request) {
   try {
-    // Sanity envía el cuerpo del documento en la petición
     const body = await request.json();
     
-    // Extraemos los datos necesarios del documento de Sanity (Lógica Original)
-    const { email, nombre, password } = body;
+    // Extraemos los datos y el nuevo 'tipoAccion' para decidir qué correo enviar
+    const { email, nombre, password, tipoAccion } = body;
 
-    // Validación de seguridad para evitar envíos vacíos (Original)
-    if (!email || !password) {
+    // Validación de seguridad (Si es rechazo, el password no es obligatorio)
+    if (!email || (tipoAccion !== 'rechazo' && !password)) {
       return NextResponse.json({ error: "Datos insuficientes" }, { status: 400 });
     }
 
+    // ✅ CORRECCIÓN DE SEGURIDAD: Forzamos la contraseña a minúsculas para match con Sanity
+    const safePassword = password ? password.toLowerCase() : "";
+
+    // LÓGICA DE CONTENIDO DINÁMICO (Aprobación vs Rechazo)
+    const esRechazo = tipoAccion === 'rechazo';
+    
+    const subject = esRechazo 
+      ? `📋 Actualización de Postulación - TASF` 
+      : `⚖️ Acceso Concedido: Bienvenido a la Red TASF`;
+
     const data = await resend.emails.send({
-      // ✅ ACTUALIZADO: Identidad profesional + Dominio verificado
       from: 'Tu Abogado Sin Fronteras <gestion@tuabogadosinfronteras.com>', 
       to: [email],
-      subject: `⚖️ Acceso Concedido: Bienvenido a la Red TASF`,
+      subject: subject,
       html: `
         <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0a0a0a; font-family: 'Segoe UI', Arial, sans-serif;">
           <tr>
             <td align="center" style="padding: 40px 20px;">
-              <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #141414; border: 1px solid #D4AF37; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+              <table width="600" border="0" cellspacing="0" cellpadding="0" style="background-color: #141414; border: 1px solid ${esRechazo ? '#ff4444' : '#D4AF37'}; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
                 <tr>
                   <td align="center" style="padding: 50px 40px 20px 40px; background-color: #1a1a1a;">
-                    <div style="background-color: #D4AF37; width: 60px; height: 60px; border-radius: 15px; margin-bottom: 20px; display: table;">
-                      <span style="display: table-cell; vertical-align: middle; color: #000; font-size: 30px; font-weight: bold; text-align: center;">⚖️</span>
+                    <div style="background-color: ${esRechazo ? '#ff4444' : '#D4AF37'}; width: 60px; height: 60px; border-radius: 15px; margin-bottom: 20px; display: table;">
+                      <span style="display: table-cell; vertical-align: middle; color: #000; font-size: 30px; font-weight: bold; text-align: center;">${esRechazo ? '🚫' : '⚖️'}</span>
                     </div>
-                    <h2 style="color: #ffffff; margin: 0; font-size: 26px; text-transform: uppercase; letter-spacing: 3px; font-weight: 900; font-style: italic;">Credenciales de Acceso</h2>
-                    <p style="color: #D4AF37; font-size: 11px; text-transform: uppercase; letter-spacing: 5px; margin-top: 10px; font-weight: bold;">Estatus: Aprobado</p>
+                    <h2 style="color: #ffffff; margin: 0; font-size: 26px; text-transform: uppercase; letter-spacing: 3px; font-weight: 900; font-style: italic;">
+                      ${esRechazo ? 'Estatus de Postulación' : 'Credenciales de Acceso'}
+                    </h2>
+                    <p style="color: ${esRechazo ? '#ff4444' : '#D4AF37'}; font-size: 11px; text-transform: uppercase; letter-spacing: 5px; margin-top: 10px; font-weight: bold;">
+                      Estatus: ${esRechazo ? 'No Admitido' : 'Aprobado'}
+                    </p>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding: 40px;">
-                    <p style="color: #ffffff; font-size: 18px; margin-bottom: 20px;">Bienvenido al Panel de Especialistas, <strong>Abg. ${nombre}</strong></p>
-                    <p style="color: #888888; font-size: 14px; line-height: 1.7; margin-bottom: 30px;">
-                      Sus credenciales han sido verificadas exitosamente por la dirección legal. A partir de este momento, usted tiene acceso a los casos activos disponibles de <strong>Tu Abogado Sin Fronteras</strong>.
-                    </p>
+                    <p style="color: #ffffff; font-size: 18px; margin-bottom: 20px;">Estimado(a) <strong>Abg. ${nombre}</strong>,</p>
                     
-                    <div style="background-color: #000000; border: 1px solid #333333; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
-                      <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                          <td style="padding-bottom: 15px;">
-                            <span style="color: #666666; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 5px;">Usuario de Red</span>
-                            <span style="color: #ffffff; font-size: 16px; font-weight: bold;">${email}</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td>
-                            <span style="color: #666666; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 5px;">Clave Temporal</span>
-                            <span style="color: #D4AF37; font-size: 22px; font-weight: bold; letter-spacing: 2px;">${password}</span>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
+                    ${esRechazo ? `
+                      <p style="color: #888888; font-size: 14px; line-height: 1.7; margin-bottom: 30px;">
+                        Agradecemos su interés en formar parte de nuestra red. Tras una revisión detallada de sus credenciales y de acuerdo con nuestras <strong>políticas internas e incongruencias detectadas con la normativa de Tu Abogado Sin Fronteras</strong>, le informamos que su postulación ha sido rechazada en esta ocasión.
+                      </p>
+                      <p style="color: #666666; font-size: 13px; font-style: italic; text-align: center;">
+                        Esta es una decisión administrativa definitiva por razones de seguridad biométrica y profesional.
+                      </p>
+                    ` : `
+                      <p style="color: #888888; font-size: 14px; line-height: 1.7; margin-bottom: 30px;">
+                        Sus credenciales han sido verificadas exitosamente por la dirección legal. A partir de este momento, usted tiene acceso a los casos activos disponibles de <strong>Tu Abogado Sin Fronteras</strong>.
+                      </p>
+                      
+                      <div style="background-color: #000000; border: 1px solid #333333; border-radius: 15px; padding: 25px; margin-bottom: 30px;">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                          <tr>
+                            <td style="padding-bottom: 15px;">
+                              <span style="color: #666666; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 5px;">Usuario de Red</span>
+                              <span style="color: #ffffff; font-size: 16px; font-weight: bold;">${email}</span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <span style="color: #666666; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 5px;">Clave Temporal</span>
+                              <span style="color: #D4AF37; font-size: 22px; font-weight: bold; letter-spacing: 2px;">${safePassword}</span>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
 
-                    <p style="color: #D4AF37; font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px;">PRÓXIMO PASO:</p>
-                    <p style="color: #888888; font-size: 13px; line-height: 1.6; text-align: center;">
-                      Inicie sesión en <strong>tuabogadosinfronteras.com</strong> y cambie su contraseña en la sección de configuración por razones de seguridad.
-                    </p>
+                      <p style="color: #D4AF37; font-size: 12px; font-weight: bold; text-align: center; margin-bottom: 10px;">PRÓXIMO PASO:</p>
+                      <p style="color: #888888; font-size: 13px; line-height: 1.6; text-align: center;">
+                        Inicie sesión en <strong>tuabogadosinfronteras.com</strong> y cambie su contraseña en la configuración.
+                      </p>
+                    `}
                   </td>
                 </tr>
                 <tr>
@@ -79,7 +101,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, data });
   } catch (error) {
-    console.error("Error en API Aprobar Abogado:", error);
-    return NextResponse.json({ success: false, error: "Error enviando acceso" }, { status: 500 });
+    console.error("Error en API Gestión Abogado:", error);
+    return NextResponse.json({ success: false, error: "Error en el proceso" }, { status: 500 });
   }
 }

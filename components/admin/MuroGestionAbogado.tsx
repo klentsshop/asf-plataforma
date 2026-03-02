@@ -44,7 +44,7 @@ export function MuroGestionAbogado({ mensaje, setMensaje, onSend, cargando, esSo
       <textarea
         value={mensaje}
         onChange={(e) => setMensaje(e.target.value)}
-        placeholder={esSolvente ? "Instrucciones técnicas para el cliente..." : "Redacte la propuesta legal..."}
+        placeholder={esSolvente ? "Instrucciones técnicas para el cliente..." : "Redacte la propuesta legal, Colega, la aceptación de este caso depende de su claridad técnica inicial. Desglose los puntos clave de su estrategia, justifique sus honorarios en base a la complejidad detectada y ofrezca una ruta de acción clara. Recuerde que la ambigüedad en esta etapa es la principal causa de desistimiento por parte del cliente. Sea explicativo, técnico y convincente."}
         className={`w-full h-64 p-8 border-2 rounded-[2.5rem] outline-none text-sm italic shadow-inner transition-all leading-relaxed text-left resize-none
           ${error ? "bg-red-50 border-red-200" : "bg-slate-50 border-slate-100 focus:border-[#D4AF37] focus:bg-white"}`}
       />

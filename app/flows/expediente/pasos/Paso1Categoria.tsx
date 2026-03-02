@@ -10,7 +10,8 @@ import {
   Briefcase, 
   ShieldCheck, 
   FileText, 
-  MapPin, 
+  MapPin,
+  Handshake, 
   Scale, 
   Flower2 
 } from "lucide-react";
@@ -29,6 +30,7 @@ export function Paso1Categoria({ seleccion, setSeleccion, navegarPaso }: PasoPro
       ShieldCheck, 
       FileText, 
       MapPin,
+      Handshake, 
       Scale,
       Flower2 // Por si usas el de derecho sucesoral/herencias
     };

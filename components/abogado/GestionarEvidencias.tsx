@@ -50,12 +50,27 @@ export function GestionarEvidencias({ casoSeleccionado }: Props) {
         )}
 
         {/* AUDIO DEL RELATO */}
-        {casoSeleccionado?.audioUrl && (
-          <div className="bg-[#1a1a1a] p-6 rounded-3xl shadow-xl">
-             <p className="text-[8px] font-black text-[#D4AF37] uppercase tracking-[0.3em] mb-3 italic">Audio de Evidencia</p>
-            <audio src={casoSeleccionado.audioUrl} controls className="w-full h-8" />
-          </div>
-        )}
+      
+  {casoSeleccionado?.audioUrl && (
+  <div className="bg-[#1a1a1a] p-6 rounded-[2.5rem] border-2 border-[#D4AF37]/20 shadow-2xl animate-in fade-in zoom-in-95 w-full md:w-[450px] mx-auto">
+    <div className="flex items-center justify-between mb-4">
+      <p className="text-[8px] font-black text-[#D4AF37] uppercase tracking-[0.4em] italic">
+        Audio de Relato
+      </p>
+      <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+    </div>
+    
+    {/* Eliminamos el contenedor interno que apretaba el audio y quitamos el h-10 */}
+    <div className="w-full">
+      <audio 
+        src={casoSeleccionado.audioUrl} 
+        controls 
+        className="w-full filter invert opacity-90 transition-all duration-300"
+        style={{ height: '54px' }} // Altura estándar de seguridad para Chrome Desktop
+      />
+    </div>
+  </div>
+)}
 
         {/* LISTADO DE DOCUMENTOS */}
         <div className="space-y-3">

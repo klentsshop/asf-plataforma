@@ -33,8 +33,8 @@ export function Paso4Situacion({
 
         <div className="space-y-6">
           <textarea
-            placeholder="Escribe brevemente tu caso aquí..."
-            className="w-full h-32 p-4 bg-white border-4 border-[#D4AF37]/30 rounded-2xl focus:border-[#D4AF37] outline-none text-left transition-all font-black text-xs text-slate-700 placeholder:text-slate-300"
+            placeholder="Describe sea en texto o audio detalladamente el caso, para garantizar una valoración económica real y un plan de defensa concreto, es imperativo que su relato sea exhaustivo. Detalle fechas, nombres, lugares y hechos clave. Un informe incompleto podría derivar en una estimación errónea de sus honorarios"
+            className="w-full h-32 p-4 bg-white border-4 border-[#D4AF37]/30 rounded-2xl focus:border-[#D4AF37] outline-none text-left transition-all font-black text-base text-slate-700 placeholder:text-slate-300"
             onChange={(e) =>
               setSeleccion({ ...seleccion, descripcion: e.target.value })
             }

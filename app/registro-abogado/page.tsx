@@ -25,12 +25,12 @@ export default function RegistroAbogado() {
   const [errores, setErrores] = useState<{ cedula?: string; email?: string; inpre?: string }>({});
   
   const ramasLegales = [
-    { title: '🏡 Civil(Propiedades)', value: 'propiedades' },
-    { title: '👨‍👩‍👧‍👦 Familia(Relaciones)', value: 'familias' },
-    { title: '💼 Mercantil(Negocios)', value: 'negocios' },
-    { title: '⚖️ Penal(Defensas)', value: 'penal' },
-    { title: '📄 Administrativo(Trámites)', value: 'gestiones' },
-    { title: '⚖️ Laboral(Trabajadores)', value: 'global' },
+    { title: '🏡 Civil (Propiedades)', value: 'propiedades' },
+    { title: '👨‍👩‍👧‍👦 Familia (Relaciones)', value: 'familias' },
+    { title: '💼 Mercantil (Negocios)', value: 'negocios' },
+    { title: '⚖️ Penal (Defensas)', value: 'penal' },
+    { title: '📄 Administrativo (Trámites)', value: 'gestiones' },
+    { title: '🤝🏻 Laboral (Trabajadores)', value: 'global' },
   ];
 
   const estadosVenezuela = [
@@ -284,7 +284,7 @@ export default function RegistroAbogado() {
                     <Camera size={24} />
                   </div>
                   <div className="text-center">
-                    <span className="block text-[10px] text-[#1a1a1a] font-black uppercase tracking-widest">Cargar Selfie</span>
+                    <span className="block text-[10px] text-[#1a1a1a] font-black uppercase tracking-widest">Selfie con carnet</span>
                   </div>
                 </label>
               )}

@@ -7,9 +7,9 @@ export function HeaderWizard({ paso, isPending, navegarPaso }: any) {
       <div className="container mx-auto px-6 text-center relative z-10">
         
         {/* TÍTULO DINÁMICO */}
-        <h1 className="text-3xl md:text-6xl font-black text-white mb-1 tracking-tighter uppercase text-center italic">
+        <h1 className="text-3xl md:text-6xl font-black text-white mb-1 tracking-tighter uppercase text-center italic overflow-visible">
           {paso < 5 ? "¿Qué trámite " : paso === 7 ? "Asesoría " : "Validación "} 
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F3E3B4] to-[#B8860B]">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F3E3B4] to-[#B8860B] pr-4 -mr-4">
             {paso < 5 ? "desea realizar?" : paso === 7 ? "Especializada" : "en curso"}
           </span>
         </h1>

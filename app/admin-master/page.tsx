@@ -148,7 +148,27 @@ export default function AdminMaster() {
       alert("Error al vincular.");
     }
   };
+  const rechazarAbogado = async (id: string, email: string, nombre: string)  => {
+  const confirmar = confirm("¿Está seguro de denegar el acceso a este abogado? Esta acción es irreversible.");
+  if (!confirmar) return;
 
+  try {
+    await client.patch(id).set({ estatus: 'rechazado' }).commit();
+    const resp = await fetch('/api/aprobacion-abogado', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        email, 
+        nombre, 
+        tipoAccion: 'rechazo' // 👈 Esta es la clave para el IF en el backend
+      })
+    });
+   alert("❌ Postulación denegada y correo de políticas enviado.");
+    cargarDataMaestra();
+  } catch (e) {
+    alert("Error al procesar rechazo.");
+  }
+};
   const aprobarAbogado = async (id: string, email: string, nombre: string) => {
   const claveTemporal = Math.random().toString(36).slice(-8);
 
@@ -355,8 +375,11 @@ export default function AdminMaster() {
           >
             Aprobar Credenciales
           </button>
-          <button className="flex-1 bg-white text-slate-300 py-6 rounded-full text-[11px] font-black uppercase italic tracking-widest border-2 border-slate-100 transition-all hover:text-red-600 hover:border-red-100">
-            Rechazar
+          <button 
+          onClick={() => rechazarAbogado(abog._id, abog.email, abog.nombre)} // 🔥 Añadidos email y nombre
+         className="flex-1 bg-[#1a1a1a] text-white py-6 rounded-full text-[11px] font-black uppercase italic tracking-widest border-2 border-white/10 transition-all duration-300 hover:bg-red-600 hover:border-red-400 hover:scale-105 active:scale-95 shadow-lg"
+         >
+          Rechazar
           </button>
         </div>
 
