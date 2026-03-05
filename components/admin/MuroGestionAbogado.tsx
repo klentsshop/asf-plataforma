@@ -3,18 +3,20 @@ import { useState, useEffect } from "react";
 import { Send, AlertTriangle, Sparkles } from "lucide-react";
 import { filterSensitiveInfo } from "../../app/lib/utils/security";
 
-export function MuroGestionAbogado({ mensaje, setMensaje, onSend, cargando, esSolvente, datosCaso }: any) {
+// 🟢 Mantenemos todas las props e inyectamos ofertaMonto para la validación
+export function MuroGestionAbogado({ mensaje, setMensaje, onSend, cargando, esSolvente, datosCaso, ofertaMonto }: any) {
   const [error, setError] = useState("");
 
-  // 📝 ESTRUCTURA DE LA PLANTILLA OFICIAL TASF
+  // 📝 ESTRUCTURA DE LA PLANTILLA OFICIAL TASF (Recuperada al 100%)
   const plantilla = `Buen día ${datosCaso?.cliente?.nombre || "Estimado Cliente"}, con mucho gusto *Tu Abogado Sin Fronteras* te asistirá en tu caso.
 
 Las fases del proceso son las siguientes: 
 1. 
 2. 
+3.....
 
 Tiempo aproximado de entrega: 
-Valor total: 
+Valor total: Dependerá del precio del (vehículo, inmueble, trámite,etc) 
 Valor aproximado: `;
 
   // ✨ AUTO-CARGA: Solo para Asesoría Gratuita y solo si el campo está vacío
@@ -24,7 +26,7 @@ Valor aproximado: `;
     }
   }, [esSolvente]);
 
-  // REFUERZO 1: Validación proactiva (Mantenida línea por línea)
+  // REFUERZO 1: Validación proactiva (Sin cambios en la lógica para evitar bucles)
   useEffect(() => {
     if (mensaje.length > 5) {
       const textoCompacto = mensaje.replace(/[\s\.\-\(\),]/g, '');
@@ -40,6 +42,14 @@ Valor aproximado: `;
   }, [mensaje]);
 
   const validarYEnviar = () => {
+    // 🛡️ CANDADO DE HONORARIOS: No permite enviar si el monto es inválido
+    const montoInvalido = !ofertaMonto || ofertaMonto === "0" || ofertaMonto === "0.00" || ofertaMonto.trim() === "";
+    
+    if (!esSolvente && montoInvalido) {
+        setError("ERROR: Debe definir un presupuesto válido en el recuadro superior antes de notificar al cliente.");
+        return;
+    }
+
     // REFUERZO 2: Limpieza radical antes de disparar
     const mensajeLimpio = mensaje.replace(/[\s\.\-\(\),]/g, ''); 
     const v1 = filterSensitiveInfo(mensaje);
@@ -53,7 +63,8 @@ Valor aproximado: `;
     setError("");
     onSend(); 
   };
-return (
+
+  return (
     <div className="space-y-4 text-left">
       {!esSolvente && (
         <div className="space-y-4">
@@ -65,7 +76,7 @@ return (
             </span>
           </div>
 
-          {/* 💡 MENSAJE MOTIVADOR E INSTRUCCIÓN TÉCNICA (Siempre visible) */}
+          {/* 💡 MENSAJE MOTIVADOR E INSTRUCCIÓN TÉCNICA (Recuperado texto original) */}
           <div className="px-8 py-5 bg-slate-100/50 border-l-4 border-[#D4AF37] rounded-r-[1.5rem] shadow-sm">
             <p className="text-[10px] text-slate-600 leading-relaxed italic">
               <span className="font-black text-[#D4AF37] uppercase tracking-tighter mr-1">Instrucción Colega:</span>
@@ -78,7 +89,7 @@ return (
       <textarea
         value={mensaje}
         onChange={(e) => setMensaje(e.target.value)}
-        // Mantenemos el placeholder original por si el abogado borra la plantilla
+        // Placeholder original recuperado íntegramente
         placeholder={esSolvente ? "Instrucciones técnicas para el cliente..." : "Redacte la propuesta legal, Colega, la aceptación de este caso depende de su claridad técnica inicial. Desglose los puntos clave de su estrategia, justifique sus honorarios en base a la complejidad detectada y ofrezca una ruta de acción clara. Recuerde que la ambigüedad en esta etapa es la principal causa de desistimiento por parte del cliente. Sea explicativo, técnico y convincente."}
         className={`w-full h-80 p-8 border-2 rounded-[2.5rem] outline-none text-sm italic shadow-inner transition-all leading-relaxed resize-none
           ${error ? "bg-red-50 border-red-200" : "bg-slate-50 border-slate-100 focus:border-[#D4AF37] focus:bg-white"}`}
@@ -91,8 +102,8 @@ return (
       )}
 
       <button
-        // REFUERZO 3: Bloqueo físico (Mantenido)
-        disabled={cargando || !mensaje || error !== ""}
+        // 🟢 BLOQUEO FÍSICO: Se añade la condición de ofertaMonto al disabled original
+        disabled={cargando || !mensaje || error !== "" || (!esSolvente && (!ofertaMonto || ofertaMonto === "0" || ofertaMonto === "0.00"))}
         onClick={validarYEnviar}
         className="w-full bg-[#1a1a1a] text-[#D4AF37] py-5 rounded-[2rem] font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-2xl transition-all italic border-2 border-[#D4AF37]/20 hover:scale-[1.02] active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed"
       >

@@ -50,7 +50,7 @@ export function MuroGestionCliente({ onSend, cargando, manejarArchivo, tieneArch
   // 🛡️ LÓGICA DE BLOQUEO POR PAGO (Paywall TASF)
   if (!pagoValidado) {
     return (
-      <div className="bg-[#1a1a1a] p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] shadow-2xl border-4 border-[#D4AF37] text-center relative overflow-hidden animate-in fade-in zoom-in-95 duration-700">
+      <div className="bg-[#1a1a1a] p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] shadow-2xl border-4 border-[#D4AF37] text-center relative overflow-y-auto max-h-[85vh] md:max-h-none animate-in fade-in zoom-in-95 duration-700">
         <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/10 rounded-full -mr-16 -mt-16 blur-3xl" />
         
         <div className="w-20 h-20 bg-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-6 border-4 border-white shadow-2xl">
@@ -71,8 +71,8 @@ export function MuroGestionCliente({ onSend, cargando, manejarArchivo, tieneArch
           
           <div className="space-y-4">
             <div className="flex flex-col">
-              <span className="text-[13px] md:text-[15px] text-white font-black italic leading-tight">Banco de Venezuela (Cuenta corriente No. 01020215910000228578)</span>
-              <span className="text-slate-400 text-[12px] md:text-[14px] font-medium tracking-tight">Liz Pineda CI: 16268588</span>
+              <span className="text-[13px] md:text-[15px] text-white font-black italic leading-tight break-all block">Banco de Venezuela (Cuenta corriente No. <br className="md:hidden" /> 01020215910000228578)</span>
+              <span className="text-slate-400 text-[12px] md:text-[14px] font-medium tracking-tight ">Liz Pineda CI: 16268588</span>
             </div>
             
             <div className="flex flex-col">
