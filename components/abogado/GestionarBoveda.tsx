@@ -81,6 +81,7 @@ export function GestionarBoveda({
             onSend={enviarActualizacionYPrecio}
             cargando={cargando}
             esSolvente={casoSeleccionado?.pagoValidado}
+            datosCaso={casoSeleccionado}
           />
         )}
       </div>

@@ -102,7 +102,7 @@ export function BovedaLegal({
             cargando={subiendoArchivo} 
             pagoValidado={datosCaso?.pagoValidado}
             manejarArchivo={manejarCargaArchivo} 
-            tieneArchivo={datosCaso?.documentosPrueba && datosCaso.documentosPrueba.length > 0}
+            tieneArchivo={!!datosCaso?.archivoPendiente || (datosCaso?.documentosPrueba?.length > 0)}
           />
         )}
 
