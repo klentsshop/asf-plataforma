@@ -17,6 +17,27 @@ export function BovedaLogin({
   cargando,
   router
 }: Props) {
+  
+  // 🟢 LA FUNCIÓN CLAVE: Limpia antes de validar
+  const manejarEnvioLimpio = () => {
+    // 1. Validamos que no estén vacíos
+    if (!credenciales.email || !credenciales.casoId) return validarAcceso();
+
+    // 2. Normalizamos los datos
+    const emailNormalizado = credenciales.email.trim().toLowerCase();
+    const idNormalizado = credenciales.casoId.trim();
+
+    // 3. Actualizamos el estado para que el componente padre los tenga limpios
+    setCredenciales({
+      ...credenciales,
+      email: emailNormalizado,
+      casoId: idNormalizado
+    });
+
+    // 4. Ejecutamos la validación
+    validarAcceso();
+  };
+
   return (
     <main className="min-h-screen bg-[#F3F4F6] flex items-center justify-center p-6 font-sans">
       <div className="max-w-md w-full bg-white border-4 border-[#D4AF37] p-10 rounded-[3rem] shadow-2xl relative overflow-hidden text-center">
@@ -26,7 +47,7 @@ export function BovedaLogin({
           onClick={() => router.push("/")}
           className="mb-8 flex items-center gap-2 text-slate-400 hover:text-[#D4AF37] font-black uppercase text-[10px] tracking-widest italic transition-all mx-auto"
         >
-          <ChevronLeft size={16} /> Volver al Inicio
+          <span className="flex items-center gap-1"><ChevronLeft size={16} /> Volver al Inicio</span>
         </button>
 
         <div className="w-24 h-24 bg-[#1a1a1a] text-[#D4AF37] rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl border-2 border-[#D4AF37]">
@@ -37,33 +58,36 @@ export function BovedaLogin({
           Acceso a Usuario
         </h1>
 
-        <p className="text-slate-400 text-[10px] mb-10 uppercase tracking-[0.3em] font-bold italic">
+        <p className="text-slate-400 text-[10px] mb-10 uppercase tracking-[0.3em] font-bold italic text-center">
           Protocolo de Seguridad Nivel Militar
         </p>
 
         <div className="space-y-5 text-left">
+          {/* EMAIL: Limpieza reactiva en el onChange */}
           <div className="relative group">
             <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-[#D4AF37]" size={18} />
             <input
               type="email"
               placeholder="EMAIL DE REGISTRO"
               className="w-full p-5 pl-14 bg-white border-4 border-[#D4AF37]/20 rounded-2xl outline-none focus:border-[#D4AF37] font-black text-xs text-[#1a1a1a] transition-all"
-              onChange={(e) => setCredenciales({ ...credenciales, email: e.target.value })}
+              onChange={(e) => setCredenciales({ ...credenciales, email: e.target.value.trim().toLowerCase() })}
             />
           </div>
 
+          {/* ID: Limpieza de espacios en el onChange */}
           <div className="relative group">
             <FileText className="absolute left-5 top-1/2 -translate-y-1/2 text-[#D4AF37]" size={18} />
             <input
               type="text"
               placeholder="ID DE EXPEDIENTE"
               className="w-full p-5 pl-14 bg-white border-4 border-[#D4AF37]/20 rounded-2xl outline-none focus:border-[#D4AF37] font-black text-xs text-[#1a1a1a] transition-all"
-              onChange={(e) => setCredenciales({ ...credenciales, casoId: e.target.value })}
+              onChange={(e) => setCredenciales({ ...credenciales, casoId: e.target.value.trim() })}
             />
           </div>
 
           <button
-            onClick={validarAcceso}
+            // 🔥 CAMBIO CLAVE: Llamamos a nuestra función de limpieza, no a la prop directa
+            onClick={manejarEnvioLimpio}
             disabled={cargando}
             className="w-full p-6 bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] font-black uppercase tracking-[0.2em] rounded-2xl transition-all flex items-center justify-center gap-3 mt-6 shadow-2xl hover:scale-[1.02] active:scale-95 border-2 border-white italic text-xs"
           >

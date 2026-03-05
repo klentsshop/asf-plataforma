@@ -29,9 +29,9 @@ export function GestionarBoveda({
   const esConcluido = casoSeleccionado?.estado === 'concluido';
 
   return (
-    <div className={`lg:col-span-2 p-10 space-y-8 ${esConcluido ? 'opacity-80' : ''}`}>
+    <div className={`lg:col-span-2 p-5 md:p-10 space-y-6 md:space-y-8 ${esConcluido ? 'opacity-80' : ''}`}>
       {/* SECCIÓN SUPERIOR: ID Y PRESUPUESTO (100% ORIGINAL) */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="text-left">
           <div className="flex items-center gap-2">
             <h3 className="text-2xl font-black text-[#1a1a1a] uppercase italic tracking-tighter">
@@ -45,7 +45,7 @@ export function GestionarBoveda({
           </p>
         </div>
 
-        <div className="bg-slate-50 px-6 py-4 rounded-2xl border-2 border-slate-100 text-right">
+        <div className="bg-slate-50 px-5 py-4 rounded-2xl border-2 border-slate-100 text-center md:text-right w-full md:w-auto">
           <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">
             {esConcluido ? "Monto Final" : casoSeleccionado?.pagoValidado ? "Acuerdo Actual" : "Presupuesto"}
           </p>

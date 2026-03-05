@@ -56,8 +56,13 @@ export default function RegistroAbogado() {
             if (exCed) nuevosErrores.cedula = "🚨 Documento ya registrado.";
           }
           if (datos.email) {
-            const exMail = await client.fetch(`*[(_type == "cliente" || _type == "abogado") && email == $val][0]`, { val: datos.email });
-            if (exMail) nuevosErrores.email = "🚨 Correo ya en uso.";
+          // 🟢 Normalizamos el valor de búsqueda para detectar duplicados sin importar mayúsculas
+          const emailABuscar = datos.email.trim().toLowerCase();
+          const exMail = await client.fetch(
+          `*[(_type == "cliente" || _type == "abogado") && email == $val][0]`, 
+           { val: emailABuscar }
+           );
+          if (exMail) nuevosErrores.email = "🚨 Correo ya en uso.";
           }
           if (datos.inpre) {
             const exInpre = await client.fetch(`*[_type == "abogado" && inpreabogado == $val][0]`, { val: datos.inpre });
@@ -79,7 +84,9 @@ export default function RegistroAbogado() {
     e.preventDefault();
     if (Object.keys(errores).length > 0) return alert("Por favor, corrija los datos duplicados.");
     if (!archivoInpre || !archivoSelfie) return alert("Por favor, suba tanto el carnet como la selfie de validación.");
-    
+    const emailLimpio = datos.email.trim().toLowerCase();
+    const datosNormalizados = { ...datos, email: emailLimpio };
+
     setCargando(true);
     try {
       // 1. Subir Foto del Carnet
@@ -89,7 +96,7 @@ export default function RegistroAbogado() {
       const assetSelfie = await client.assets.upload('file', archivoSelfie);
 
       // 3. Llamar a la acción del servidor (ESTO CREA EL ABOGADO CORRECTAMENTE)
-      const res = await registrarPostulacionAbogado(datos, assetInpre._id, assetSelfie._id);
+      const res = await registrarPostulacionAbogado(datosNormalizados, assetInpre._id, assetSelfie._id);
 
       if (res.success) {
         // 4. Enviar notificación por correo
@@ -97,10 +104,10 @@ export default function RegistroAbogado() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            nombre: datos.nombre, 
-            email: datos.email, 
-            inpre: datos.inpre,
-            ubicacion: datos.ubicacion
+            nombre: datosNormalizados.nombre, 
+            email: datosNormalizados.email, 
+            inpre: datosNormalizados.inpre,
+            ubicacion: datosNormalizados.ubicacion
           })
         });
         setEnviado(true);

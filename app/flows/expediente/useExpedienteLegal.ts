@@ -76,7 +76,9 @@ export function useExpedienteLegal(
     let casoId = casoIdGenerado || StorageCaso.getCasoId();
     if (!casoId) return alert("Error: No se detectó un ID de expediente activo.");
 
-    if (!seleccion.nombre || !seleccion.email) {
+    const emailNormalizado = seleccion.email.trim().toLowerCase();
+    const nombreLimpio = seleccion.nombre.trim();
+    if (!nombreLimpio || !emailNormalizado) {
       return alert("Por favor, complete su nombre y correo.");
     }
 
@@ -84,7 +86,11 @@ export function useExpedienteLegal(
 
     try {
       // 1. Vinculación en Base de Datos (Sanity)
-      const link = await vincularCliente(casoId, seleccion);
+      const link = await vincularCliente(casoId, { 
+        ...seleccion, 
+        email: emailNormalizado,
+        nombre: nombreLimpio 
+      });
 
       if (!link.success) {
         throw new Error("Sanity no pudo vincular al cliente.");
@@ -95,8 +101,8 @@ export function useExpedienteLegal(
 
       // 2. Notificación Oficial (Resend / API Send)
       const resp = await enviarCorreoBoveda({
-        email: seleccion.email,
-        nombre: seleccion.nombre,
+        email: emailNormalizado,
+        nombre: nombreLimpio,
         casoId,
         codigoExpediente: codigoReal
       });
@@ -107,10 +113,10 @@ export function useExpedienteLegal(
 
       // BLINDAJE DE IDENTIDAD PARA LA BÓVEDA: Evita cargar casos viejos
       sessionStorage.setItem("asf_id", casoId); 
-      sessionStorage.setItem("asf_email", seleccion.email);
+      sessionStorage.setItem("asf_email", emailNormalizado);
 
       // 3. Limpieza de Seguridad
-      StorageCaso.setEmail(seleccion.email);
+      StorageCaso.setEmail(emailNormalizado);
       StorageCaso.clearCaso();
       
       // Reseteo de estados de notificación para el siguiente proceso

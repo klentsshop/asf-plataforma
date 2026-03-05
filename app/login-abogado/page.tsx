@@ -19,7 +19,7 @@ export default function LoginAbogado() {
     e.preventDefault();
     setCargando(true);
     setError(null);
-
+    const emailNormalizado = credenciales.email.trim().toLowerCase();
     try {
       // 🛡️ CONSULTA DE SEGURIDAD ASF: Incluye ubicación y especialidad para el Matchmaker
       const query = `*[_type == "abogado" && email == $email && password == $password][0]{
@@ -32,7 +32,7 @@ export default function LoginAbogado() {
       }`;
       
       const abogado = await client.fetch(query, { 
-        email: credenciales.email, 
+        email: emailNormalizado, 
         password: credenciales.password 
       });
 
