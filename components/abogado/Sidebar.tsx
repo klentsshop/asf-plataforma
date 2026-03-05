@@ -45,7 +45,7 @@ export function Sidebar({ vista, setVista }: SidebarProps) {
             <NavItem
               onClick={() => setVista("expedientes")}
               icon={<FileText size={18} />}
-              label="Procesos Concluidos"
+              label="Concluidos"
               active={vista === "expedientes"}
             />
             <NavItem

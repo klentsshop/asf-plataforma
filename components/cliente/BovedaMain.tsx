@@ -52,6 +52,7 @@ export function BovedaMain({
             // INYECTAMOS LAS FUNCIONES FALTANTES AQUÍ:
             enviarMensajeAlAbogado={enviarMensajeAlAbogado}
             enviarResenaFinal={enviarResenaFinal}
+            manejarCargaArchivo={manejarCargaArchivo}
           />
         </div>
 

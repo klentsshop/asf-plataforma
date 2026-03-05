@@ -12,6 +12,7 @@ type Props = {
   indiceActual: number;
   enviarMensajeAlAbogado: (mensaje: string) => void; 
   enviarResenaFinal: (resena: { rating: number; resenaTexto: string }) => void; 
+  manejarCargaArchivo: (e: any) => void;
 };
 
 export function BovedaLegal({ 
@@ -20,7 +21,9 @@ export function BovedaLegal({
   subirComprobante, 
   indiceActual, 
   enviarMensajeAlAbogado,
-  enviarResenaFinal 
+  enviarResenaFinal,
+  manejarCargaArchivo,
+  
 }: Props) {
   // Verificación de estado para control de interfaz
   const esCasoCerrado = datosCaso?.estado === 'concluido';
@@ -98,6 +101,8 @@ export function BovedaLegal({
             onSend={enviarMensajeAlAbogado} 
             cargando={subiendoArchivo} 
             pagoValidado={datosCaso?.pagoValidado}
+            manejarArchivo={manejarCargaArchivo} 
+            tieneArchivo={datosCaso?.documentosPrueba && datosCaso.documentosPrueba.length > 0}
           />
         )}
 

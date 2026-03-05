@@ -23,6 +23,7 @@ export default function BovedaPage() {
   const [subiendoArchivo, setSubiendoArchivo] = useState(false);
   const [credenciales, setCredenciales] = useState({ email: "", casoId: "" });
   const [datosCaso, setDatosCaso] = useState<any>(null);
+  const [archivoTemporal, setArchivoTemporal] = useState<any>(null);
 
   // 0. PERSISTENCIA + AUTO-REFRESCO SILENCIOSO (Cada 30 seg)
   useEffect(() => {
@@ -123,18 +124,29 @@ export default function BovedaPage() {
 
   // 7. ENVIAR MENSAJE DEL CLIENTE AL ABOGADO (CAMPO: mensajeCliente)
   const enviarMensajeAlAbogado = async (mensajeTexto: string) => {
-    if (!datosCaso) return;
+    if (!datosCaso || !mensajeTexto.trim()) return;
 
     setSubiendoArchivo(true);
     try {
-      await client
-        .patch(datosCaso._id)
-        .set({ mensajeCliente: mensajeTexto }) 
-        .commit();
+      // 1. Iniciamos la operación de parche sobre el documento actual
+      let operacion = client.patch(datosCaso._id).set({ mensajeCliente: mensajeTexto });
 
-      alert("Mensaje enviado con éxito al Departamento Legal.");
+      // 2. 🛡️ Lógica inteligente: Si el cliente preparó un archivo con el clip, lo incluimos
+      if (archivoTemporal) {
+        operacion = operacion
+          .setIfMissing({ documentosPrueba: [] })
+          .append('documentosPrueba', [archivoTemporal]);
+      }
+
+      // 3. Ejecutamos el commit (esto envía el mensaje y el archivo al mismo tiempo)
+      await operacion.commit();
+
+      alert("Mensaje y documentación enviados con éxito.");
+
+      // 4. ✨ Limpieza: Borramos el archivo temporal para que el clip vuelva a su estado original
+      setArchivoTemporal(null);
       
-      // Recuperamos tu bloque de consulta completo
+      // 5. 🔄 Sincronización Total (Tu consulta original intacta)
       const refresh = await client.fetch(`*[_type == "caso" && _id == $id][0]{
         ...,
         cliente->{ _id, nombre, email, cedula },
@@ -143,12 +155,12 @@ export default function BovedaPage() {
       
       setDatosCaso(refresh);
     } catch (error) {
-      alert("Error al enviar el mensaje.");
+      console.error("Error TASF:", error);
+      alert("Error al enviar el reporte legal.");
     } finally {
       setSubiendoArchivo(false);
     }
   };
- 
   // 8. ENVIAR RESEÑA FINAL (ESTRELLAS + COMENTARIO)
   const enviarResenaFinal = async (resena: { rating: number; resenaTexto: string }) => {
     if (!datosCaso) return;
@@ -187,42 +199,28 @@ export default function BovedaPage() {
 
     setSubiendoArchivo(true);
     try {
+      // 1. ☁️ Subimos el archivo a Sanity Assets para obtener la referencia
       const asset = await client.assets.upload('file', file, { filename: file.name });
 
-      await client
-        .patch(datosCaso._id)
-        .setIfMissing({ documentosPrueba: [] })
-        .append('documentosPrueba', [{
-          _key: Math.random().toString(36).substring(2, 9),
-          _type: 'file',
-          asset: { _type: 'reference', _ref: asset._id },
-          nombreOriginal: file.name,
-          fechaCarga: new Date().toISOString()
-        }])
-        .commit();
+      // 2. 📦 PREPARAMOS el objeto pero NO lo enviamos todavía (Sin .commit)
+      // Lo guardamos en el estado temporal para que el clip se ponga verde
+      setArchivoTemporal({
+        _key: Math.random().toString(36).substring(2, 9),
+        _type: 'file',
+        asset: { _type: 'reference', _ref: asset._id },
+        nombreOriginal: file.name,
+        fechaCarga: new Date().toISOString()
+      });
 
-      alert("Documento cargado exitosamente.");
+      // Feedback silencioso para confirmar que el archivo está en memoria
+      console.log("Archivo listo para ser enviado con el mensaje:", file.name);
 
-      // Recuperamos tu bloque de consulta completo
-      const dataActualizada = await client.fetch(`
-        *[_type == "caso" && _id == $id][0]{
-          ...,
-          cliente->{ _id, nombre, email, cedula },
-          "documentosPrueba": documentosPrueba[]{
-            ...,
-            "url": asset->url
-          }
-        }
-      `, { id: datosCaso._id });
-
-      setDatosCaso(dataActualizada);
     } catch (_e) {
-      alert("Error al subir el documento.");
+      alert("Error al procesar el documento.");
     } finally {
       setSubiendoArchivo(false);
     }
   };
-
   // Pantalla de carga inicial (Estética TASF)
   if (cargando && !acceso) {
     return (
@@ -263,12 +261,13 @@ export default function BovedaPage() {
           <BovedaStatusBar indiceActual={indiceActual} />
           
           <BovedaLegal
-            datosCaso={datosCaso}
+            datosCaso={{ ...datosCaso, archivoPendiente: !!archivoTemporal }}
             subiendoArchivo={subiendoArchivo}
             subirComprobante={subirComprobante}
             indiceActual={indiceActual}
             enviarMensajeAlAbogado={enviarMensajeAlAbogado}
             enviarResenaFinal={enviarResenaFinal} 
+            manejarCargaArchivo={manejarCargaArchivo}
           />
         </div>
 

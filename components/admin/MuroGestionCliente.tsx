@@ -21,14 +21,12 @@ export function MuroGestionCliente({ onSend, cargando, manejarArchivo, tieneArch
     }
   }, [mensaje]);
 
-  const manejarEnvio = () => {
-    // 🛡️ RECUPERADA: Limpieza total de caracteres para evitar elusión (VITAL)
+ const manejarEnvio = () => {
+    // 🛡️ SEGURIDAD TASF: Limpieza y validación (Intacta)
     const textoParaValidar = mensaje.replace(/[\s\.\-\(\),]/g, '');
-    
     const v1 = filterSensitiveInfo(mensaje);          
     const v2 = filterSensitiveInfo(textoParaValidar); 
 
-    // BLOQUEO RADICAL (Original e intacto)
     if (!v1.isSafe || !v2.isSafe) {
       setError("BLOQUEO DE SEGURIDAD: Se detectaron datos de contacto.");
       return; 
@@ -36,9 +34,17 @@ export function MuroGestionCliente({ onSend, cargando, manejarArchivo, tieneArch
 
     if (mensaje.length > LIMITE) return;
 
-    setError(""); // Limpieza previa al envío (Original)
-    onSend(mensaje);
-    setMensaje(""); 
+    // 🚀 LÓGICA DE ENVÍO CORREGIDA
+    // Si hay archivo pero no mensaje, igual permitimos enviar (o viceversa)
+    if (mensaje || tieneArchivo) {
+      setError(""); 
+      // Enviamos el mensaje al padre
+      onSend(mensaje); 
+      // Limpiamos el campo de texto local
+      setMensaje(""); 
+      // Nota: 'manejarArchivo' ya debió haber subido el archivo al estado del padre
+      // al momento de seleccionarlo.
+    }
   };
 
   // 🛡️ LÓGICA DE BLOQUEO POR PAGO (Paywall TASF)
@@ -133,12 +139,15 @@ export function MuroGestionCliente({ onSend, cargando, manejarArchivo, tieneArch
       )}
 
       <button
-        disabled={cargando || (!mensaje && !tieneArchivo) || error !== "" || mensaje.length > LIMITE}
-        onClick={manejarEnvio}
-        className="w-full bg-[#1a1a1a] text-[#D4AF37] py-5 rounded-[2.2rem] font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-xl transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-30"
-      >
-        <Send size={18} /> {cargando ? "TRANSMITIENDO..." : "ENVIAR REPORTE AL ABOGADO"}
-      </button>
+  // 🔥 CAMBIO AQUÍ: Eliminamos "|| !tieneArchivo" para que el texto sea OBLIGATORIO
+  disabled={cargando || !mensaje.trim() || error !== "" || mensaje.length > LIMITE}
+  onClick={manejarEnvio}
+  className="w-full bg-[#1a1a1a] text-[#D4AF37] py-5 rounded-[2.2rem] font-black text-[10px] uppercase tracking-[0.3em] flex items-center justify-center gap-4 shadow-xl transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-30"
+>
+  <Send size={18} /> 
+  {/* ✍️ CAMBIO AQUÍ: Un texto más claro para diferenciarlo del pago */}
+  {cargando ? "PROCESANDO REPORTE..." : "ENVIAR REPORTE AL ABOGADO"}
+</button>
       
       <p className="text-center text-[7px] text-slate-400 font-bold uppercase tracking-[0.2em] italic leading-relaxed px-10">
         Protocolo de seguridad activo: Su mensaje será filtrado por el sistema TASF

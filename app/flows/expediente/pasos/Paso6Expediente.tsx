@@ -28,7 +28,7 @@ export function Paso6Expediente({ notificacion }: PasoProps) {
         </div>
 
         <p className="text-slate-400 mb-10 font-bold italic text-center text-xs leading-relaxed tracking-wider uppercase">
-          Su usuario de seguridad está blindada. <br /> Se ha enviado una copia al correo.
+          Su usuario de seguridad está blindado. <br /> Se ha enviado una copia al correo.
         </p>
 
         <button onClick={() => router.push("/boveda")} className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] p-6 rounded-2xl font-black tracking-[0.2em] transition-all hover:scale-[1.02] shadow-2xl uppercase text-xs italic border-2 border-white">
