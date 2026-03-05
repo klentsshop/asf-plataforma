@@ -53,21 +53,32 @@ Valor aproximado: `;
     setError("");
     onSend(); 
   };
-
-  return (
+return (
     <div className="space-y-4 text-left">
       {!esSolvente && (
-        <div className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full w-fit animate-pulse">
-          <Sparkles size={12} className="text-[#D4AF37]" />
-          <span className="text-[9px] font-black text-[#D4AF37] uppercase tracking-widest italic">
-            Protocolo de Asesoría Gratuita Activado
-          </span>
+        <div className="space-y-4">
+          {/* 🏛️ INDICADOR DE PROTOCOLO TASF */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full w-fit animate-pulse">
+            <Sparkles size={12} className="text-[#D4AF37]" />
+            <span className="text-[9px] font-black text-[#D4AF37] uppercase tracking-widest italic">
+              Protocolo de Asesoría Gratuita Activado
+            </span>
+          </div>
+
+          {/* 💡 MENSAJE MOTIVADOR E INSTRUCCIÓN TÉCNICA (Siempre visible) */}
+          <div className="px-8 py-5 bg-slate-100/50 border-l-4 border-[#D4AF37] rounded-r-[1.5rem] shadow-sm">
+            <p className="text-[10px] text-slate-600 leading-relaxed italic">
+              <span className="font-black text-[#D4AF37] uppercase tracking-tighter mr-1">Instrucción Colega:</span>
+              Redacte la propuesta legal, la aceptación de este caso depende de su claridad técnica inicial. Desglose los puntos clave de su estrategia, justifique sus honorarios en base a la complejidad detectada y ofrezca una ruta de acción clara. Recuerde que la ambigüedad en esta etapa es la principal causa de desistimiento por parte del cliente. Sea explicativo, técnico y convincente.
+            </p>
+          </div>
         </div>
       )}
 
       <textarea
         value={mensaje}
         onChange={(e) => setMensaje(e.target.value)}
+        // Mantenemos el placeholder original por si el abogado borra la plantilla
         placeholder={esSolvente ? "Instrucciones técnicas para el cliente..." : "Redacte la propuesta legal, Colega, la aceptación de este caso depende de su claridad técnica inicial. Desglose los puntos clave de su estrategia, justifique sus honorarios en base a la complejidad detectada y ofrezca una ruta de acción clara. Recuerde que la ambigüedad en esta etapa es la principal causa de desistimiento por parte del cliente. Sea explicativo, técnico y convincente."}
         className={`w-full h-80 p-8 border-2 rounded-[2.5rem] outline-none text-sm italic shadow-inner transition-all leading-relaxed resize-none
           ${error ? "bg-red-50 border-red-200" : "bg-slate-50 border-slate-100 focus:border-[#D4AF37] focus:bg-white"}`}
