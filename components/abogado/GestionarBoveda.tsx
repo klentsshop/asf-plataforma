@@ -82,6 +82,7 @@ export function GestionarBoveda({
             cargando={cargando}
             esSolvente={casoSeleccionado?.pagoValidado}
             datosCaso={casoSeleccionado}
+            ofertaMonto={ofertaMonto}
           />
         )}
       </div>
