@@ -1,9 +1,9 @@
 import { createClient } from '@sanity/client'
 
 export const client = createClient({
-  projectId: 'keswdvsk', // Reemplaza con tu ID real
+  projectId: 'zy6vgrm7', // Reemplaza con tu ID real
   dataset: 'production',
   useCdn: false, 
   apiVersion: '2023-05-03',
-  token: 'TskNtm732AMypKt3rpsby9drvY7XDx6bEGdSl5q4FZJvsju5tyfDL4o0H3GyoDpptBADw2Ns9PQy0k1J8L5MTplxL3oKY9P0HyihwApLvlZ549meOLwOcg1qNOzPXaLSkKhRfU2ZWVH9myHe0IoNDBDDOr0OwJi3ZJ0L1kEA9tmCLQt6Rro6t', // Vital para poder CREAR casos desde la web
+  token: 'skpHMHn3AYDKgEMZp7pNTyGX8aDmdA7Mm1MT0lWvPWZ5JZBBpkjKjHThyqbILVJ8hBZN5qzuWrxWYFKa56WjMDoNBOjMUi5BcaybrPgm3LN6qXxxrTdwS7YIDtsl5MmhMyIxxgGScrZXmvgIkeBwP5yqs3aVt2L9vtttfWE5ZuZIVg7li5qo', // Vital para poder CREAR casos desde la web
 })
