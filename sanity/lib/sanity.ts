@@ -7,5 +7,5 @@ export const client = createClient({
   useCdn: false, 
   apiVersion: '2023-05-03',
   // Aquí usamos el token de escritura que ya guardamos en Netlify
-  token: process.env.SANITY_API_WRITE_TOKEN, 
+  token: process.env.NEXT_PUBLIC_SANITY_API_WRITE_TOKEN, 
 })

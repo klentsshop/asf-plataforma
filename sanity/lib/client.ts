@@ -9,7 +9,7 @@ export const client = createClient({
   // useCdn: false es obligatorio para que el "Push de pago" y el "Matchmaker" funcionen al instante
   useCdn: false, 
   // Tu token de editor permite que las Server Actions creen documentos (Abogados, Clientes, Casos)
-  token: process.env.SANITY_API_WRITE_TOKEN,
+  token: process.env.NEXT_PUBLIC_SANITY_API_WRITE_TOKEN,
   // Estas opciones aseguran que las imágenes y archivos se suban sin problemas
   ignoreBrowserTokenWarning: true,
 })
