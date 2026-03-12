@@ -49,7 +49,7 @@ export async function POST(request: Request) {
                 </tr>
                 <tr>
                   <td style="padding: 40px;">
-                    <p style="color: #ffffff; font-size: 18px; margin-bottom: 20px;">Estimado(a) <strong>Abg. ${nombre}</strong>,</p>
+                    <p style="color: #ffffff; font-size: 18px; margin-bottom: 20px;">Estimado(a) <strong> Abogad@ ${nombre}</strong>,</p>
                     
                     ${esRechazo ? `
                       <p style="color: #888888; font-size: 14px; line-height: 1.7; margin-bottom: 30px;">

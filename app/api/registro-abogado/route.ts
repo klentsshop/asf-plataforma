@@ -26,7 +26,7 @@ export async function POST(request: Request) {
                 </tr>
                 <tr>
                   <td style="padding: 40px;">
-                    <p style="color: #ffffff; font-size: 16px;">Estimado(a) <strong>Abg. ${nombre}</strong>,</p>
+                    <p style="color: #ffffff; font-size: 16px;">Estimado(a) <strong> Abogad@ ${nombre}</strong>,</p>
                     <p style="color: #cccccc; font-size: 14px; line-height: 1.6;">
                       Hemos recibido su solicitud de ingreso a la red de <strong>Tu Abogado Sin Fronteras Venezuela</strong> para el estado <strong>${ubicacion}</strong>. Sus credenciales e imágenes de validación bajo el número de INPRE <strong>${inpre}</strong> han sido enviadas al departamento de auditoría legal.
                     </p>
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
                     <div style="margin: 30px 0; padding: 20px; border: 1px dashed #D4AF37; background-color: #141414; border-radius: 10px;">
                       <p style="color: #D4AF37; font-size: 11px; font-weight: bold; margin: 0 0 10px 0; text-transform: uppercase; text-align: center;">Acuerdo de Gestión y Honorarios:</p>
                       <p style="color: #ffffff; font-size: 13px; margin: 0; line-height: 1.6; text-align: center; opacity: 0.9;">
-                        Se establece formalmente que la plataforma retendrá el <strong>30% del valor total</strong> de los honorarios percibidos por cada caso gestionado a través de nuestro sistema, en concepto de gastos administrativos, captación de clientes y soporte tecnológico.
+                        Se establece formalmente que la plataforma retendrá el <strong>20% del valor total</strong> de los honorarios percibidos por cada caso gestionado a través de nuestro sistema, en concepto de gastos administrativos, captación de clientes y soporte tecnológico.
                       </p>
                     </div>
 
