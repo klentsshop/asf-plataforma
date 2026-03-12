@@ -15,6 +15,7 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
   }, []);
 
   // Función de seguridad unificada para evitar errores y repetir código
+  // 🕵️ DEBUG: Esto te dirá en la consola (F12) qué está leyendo realmente
   const manejarAccesoAdmin = () => {
     const pin = prompt("SEGURIDAD TASF: INGRESE PIN MAESTRO");
     if (pin === process.env.NEXT_PUBLIC_ADMIN_PIN) { 
