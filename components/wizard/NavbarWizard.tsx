@@ -42,15 +42,18 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
             className="flex items-center gap-3 cursor-pointer"
             onClick={() => navegarPaso(1)}
           >
-            <div className="bg-gradient-to-br from-[#D4AF37] to-[#B8860B] p-2 rounded-lg shadow-inner border border-white/20">
-              <Scale className="text-white w-6 h-6" />
-            </div>
+            <img 
+              src="https://res.cloudinary.com/dqod8tmkq/image/upload/v1774956353/logo_tu_abogado_zmw6bx.png"
+              alt="Logo Tu Abogado Sin Fronteras"
+              // 🚀 Aumentamos el tamaño considerablemente. w-12 h-12 es el doble de antes.
+              className="w-20 h-20 object-contain" 
+            />
 
             <div className="flex flex-col text-left leading-none">
-              <span className="font-black uppercase italic text-white tracking-tight text-lg sm:text-xl lg:text-3xl">
+              <span className="font-black uppercase italic text-white tracking-tight text-xl sm:text-2xl lg:text-4xl">
                 Tu Abogado <span className="text-[#D4AF37]">Sin Fronteras</span>
               </span>
-              <span className="text-[7px] sm:text-[8px] lg:text-[9px] font-bold text-[#D4AF37] tracking-[0.4em] uppercase italic opacity-80">
+              <span className="text-[8px] sm:text-[9px] lg:text-[11px] font-bold text-[#D4AF37] tracking-[0.4em] uppercase italic opacity-90 mt-1">
                 Venezuela cerca de Ti
               </span>
             </div>

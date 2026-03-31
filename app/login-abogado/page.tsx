@@ -97,11 +97,15 @@ export default function LoginAbogado() {
   </button>
 </div>
 
-          {/* ICONO CENTRAL ASF */}
-          <div className="w-20 h-20 bg-[#1a1a1a] text-[#D4AF37] rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl border-4 border-[#D4AF37]">
-            <Scale size={36} />
+          <div className="flex items-center justify-center mx-auto mb-10 mt-6">
+            {/* 🔄 CAMBIO: Eliminamos el círculo y el borde. Ponemos la imagen directa y MUCHO más grande. */}
+            <img 
+              src="https://res.cloudinary.com/dqod8tmkq/image/upload/v1774956353/logo_tu_abogado_zmw6bx.png"
+              alt="Logo Oficial TASF"
+              // 🚀 Aumentamos el tamaño a w-28 h-28 para que tenga gran impacto visual
+              className="w-34 h-34 object-contain animate-fade-in" 
+            />
           </div>
-
           <h1 className="text-3xl font-black text-[#00244C] mb-2 uppercase tracking-tighter italic">
             Acceso <span className="text-[#D4AF37]">Red TASF</span>
           </h1>

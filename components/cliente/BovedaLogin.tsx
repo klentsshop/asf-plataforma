@@ -50,10 +50,14 @@ export function BovedaLogin({
           <span className="flex items-center gap-1"><ChevronLeft size={16} /> Volver al Inicio</span>
         </button>
 
-        <div className="w-24 h-24 bg-[#1a1a1a] text-[#D4AF37] rounded-[2rem] flex items-center justify-center mx-auto mb-8 shadow-2xl border-2 border-[#D4AF37]">
-          <ShieldCheck size={40} />
+        <div className="flex items-center justify-center mx-auto mb-10">
+          <img 
+            src="https://res.cloudinary.com/dqod8tmkq/image/upload/v1774956353/logo_tu_abogado_zmw6bx.png"
+            alt="Logo Oficial TASF"
+            // Tamaño w-24 para que tenga presencia pero no abrume el formulario
+            className="w-34 h-34 object-contain" 
+          />
         </div>
-
         <h1 className="text-3xl font-black text-[#1a1a1a] uppercase tracking-tighter mb-2 italic">
           Acceso a Usuario
         </h1>
