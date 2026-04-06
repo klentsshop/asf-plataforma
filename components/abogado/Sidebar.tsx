@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, Clock, FileText, KeyRound, ShieldCheck } from "lucide-react";
+import { Users, Clock, FileText, Landmark, KeyRound, ShieldCheck } from "lucide-react";
 
 type SidebarProps = {
   vista: string;
@@ -47,6 +47,12 @@ export function Sidebar({ vista, setVista }: SidebarProps) {
               icon={<FileText size={18} />}
               label="Concluidos"
               active={vista === "expedientes"}
+            />
+            <NavItem
+              onClick={() => setVista("pagos")}
+              icon={<Landmark size={18} />}
+              label="Pagos"
+              active={vista === "pagos"}
             />
             <NavItem
               onClick={() => setVista("seguridad")}

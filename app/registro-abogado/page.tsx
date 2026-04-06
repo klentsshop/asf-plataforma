@@ -11,12 +11,16 @@ import { client } from "@/sanity/lib/client";
 import { useRouter } from "next/navigation";
 // IMPORTANTE: Asegúrate que esta ruta sea correcta según tu proyecto
 import { registrarPostulacionAbogado } from "@/sanity/lib/actions";
+import { FaqModal } from "@/components/FaqModal";
 
 export default function RegistroAbogado() {
   const router = useRouter();
   const [enviado, setEnviado] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [validando, setValidando] = useState(false);
+
+  const [aceptoTerminos, setAceptoTerminos] = useState(false);
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
   
   // 📸 ESTADOS PARA LAS DOS FOTOS
   const [archivoInpre, setArchivoInpre] = useState<File | null>(null);
@@ -297,11 +301,33 @@ export default function RegistroAbogado() {
               )}
             </div>
           </div>
-
+          
+          {/* 🛡️ BLOQUE LEGAL OBLIGATORIO */}
+<div className="flex flex-col items-center gap-4 mt-10 mb-4 px-6">
+  <label className="flex items-start gap-3 cursor-pointer group text-left max-w-md">
+    <input 
+      type="checkbox" 
+      checked={aceptoTerminos}
+      onChange={(e) => setAceptoTerminos(e.target.checked)}
+      className="mt-1 w-5 h-5 accent-[#00244C] cursor-pointer"
+    />
+    <span className="text-[11px] text-slate-500 font-bold uppercase tracking-tighter leading-tight">
+      Confirmo que soy abogado colegiado y acepto los{" "}
+      <button 
+        type="button"
+        onClick={() => setIsFaqOpen(true)} 
+        className="text-[#D4AF37] font-black underline hover:opacity-80 transition-all"
+      >
+        Términos, Condiciones y Marco Legal
+      </button>
+      {" "}de la plataforma TASF.
+    </span>
+  </label>
+</div>
           <button 
-            disabled={cargando || hayErrores || validando || !archivoInpre || !archivoSelfie} 
+            disabled={cargando || hayErrores || validando || !archivoInpre || !archivoSelfie || !aceptoTerminos} 
             className={`w-full mt-8 p-6 rounded-2xl font-black text-sm tracking-[0.2em] uppercase transition-all italic flex items-center justify-center gap-3 shadow-2xl border-2 border-white ${
-              (cargando || hayErrores || validando || !archivoInpre || !archivoSelfie) ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] hover:scale-[1.02]"
+              (cargando || hayErrores || validando || !archivoInpre || !archivoSelfie || !aceptoTerminos) ? "bg-slate-200 text-slate-400 cursor-not-allowed opacity-70" : "bg-[#00244C] text-white hover:scale-[1.02] shadow-[0_20px_40px_rgba(0,36,76,0.3)]"
             }`}
           >
             {cargando ? (
@@ -315,6 +341,8 @@ export default function RegistroAbogado() {
         </form>
       </div>
       <p className="text-center text-[10px] text-slate-400 font-black uppercase tracking-[0.4em] mt-12 italic opacity-60">Tu Abogado Sin Fronteras Venezuela • 2026</p>
+    {/* RENDERIZADO DEL MODAL LEGAL */}
+      <FaqModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} />
     </main>
   );
 }

@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 :root {
   /* Al poner --color-*, Tailwind 4 crea automáticamente las clases */
   --color-venezuela-blue: #00244C;

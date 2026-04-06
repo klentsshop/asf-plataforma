@@ -46,7 +46,7 @@ export function Bandeja({ cargando, casos, manejarGestionar }: BandejaProps) {
                 </div>
                 <div className="min-w-0 flex-1">
                   <h4 className="font-black text-[#1a1a1a] text-lg uppercase leading-tight italic truncate">
-                    {s.categoria}
+                   {s.categoria === "global" ? "LABORAL" : s.categoria === "gestiones" ? "ADMINISTRATIVO" : s.categoria}
                   </h4>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1.5 mt-1">
                     <MapPin size={12} className="text-[#D4AF37]" /> {s.ubicacion}

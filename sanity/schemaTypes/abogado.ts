@@ -88,6 +88,7 @@ export const abogado = defineType({
   title: 'Selfie con el Carnet',
   type: 'file',
    }),
+
     defineField({
       name: 'especialidad',
       title: 'Especialidad',
@@ -145,6 +146,25 @@ export const abogado = defineType({
       title: 'Foto de Perfil',
       type: 'image',
       options: { hotspot: true },
+    }),
+    // 🏦 NUEVA SECCIÓN: DATOS BANCARIOS
+    defineField({
+      name: 'datosBancarios',
+      title: 'Información para Pagos',
+      type: 'object',
+      description: 'Datos donde la plataforma depositará los honorarios.',
+      fields: [
+        { name: 'banco', title: 'Banco', type: 'string' },
+        { 
+          name: 'tipoCuenta', 
+          title: 'Tipo de Cuenta', 
+          type: 'string',
+          options: { list: ['Ahorros', 'Corriente'] }
+        },
+        { name: 'numeroCuenta', title: 'Número de Cuenta', type: 'string' },
+        { name: 'titular', title: 'Nombre del Titular', type: 'string' },
+        { name: 'identificacion', title: 'Cédula/RIF del Titular', type: 'string' },
+      ]
     }),
     defineField({
       name: 'estatus',

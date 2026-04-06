@@ -4,6 +4,7 @@ import { useState, useEffect, useTransition } from "react";
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 
+
 // Acciones y constantes
 import { crearCasoAnonimo, registrarYVincularCliente } from "../sanity/lib/actions";
 import { estadosVenezuela, serviceCardsData } from "./lib/constants";
@@ -25,6 +26,7 @@ import { Paso8Registro } from "./flows/expediente/pasos/Paso8Registro";
 import { HeaderWizard } from "@/components/wizard/HeaderWizard";
 import { NavbarWizard } from "@/components/wizard/NavbarWizard";
 import { ReviewsFooter } from "@/components/ReviewsFooter";
+import { FaqModal } from "@/components/FaqModal";
 
 // IMPORTACIÓN DE HOOKS FUNCIONALES
 import { useExpedienteAudio } from "./flows/expediente/useExpedienteAudio";
@@ -38,7 +40,7 @@ export default function Page() {
   const [grabando, setGrabando] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [casoIdGenerado, setCasoIdGenerado] = useState<string | null>(null);
-  
+  const [isFaqOpen, setIsFaqOpen] = useState(false);
   // ESTADO PARA RESEÑAS PÚBLICAS
   const [reviews, setReviews] = useState<any[]>([]);
 
@@ -132,7 +134,7 @@ export default function Page() {
             throw new Error(res.error || "Error técnico al vincular el cliente.");
         }
       }
-
+      localStorage.setItem("session_token", "true");
       // 1. GESTIÓN DE SESIÓN INTELIGENTE
       if (esRecurrente) {
         // 🔒 SEGURIDAD: Si es recurrente, NO guardamos sesión automática.
@@ -255,12 +257,41 @@ export default function Page() {
         {/* COMPONENTE DE RESEÑAS DINÁMICAS */}
         <ReviewsFooter reviews={reviews} />
 
-        <footer className="bg-[#1a1a1a] py-12 border-t-4 border-[#D4AF37] text-center relative z-30">
-          <p className="text-slate-500 text-[9px] font-black uppercase italic tracking-[0.5em]">
-            Tu Abogado Sin Fronteras • 2026
-          </p>
-        </footer>
+        {/* FOOTER OFICIAL CON BOTÓN LEGAL */}
+<footer className="bg-[#1a1a1a] py-12 border-t-4 border-[#D4AF37] text-center relative z-30">
+  <div className="flex flex-col items-center gap-6">
+    
+    {/* Botón de Ayuda y Legal - Dorado permanente con subrayado al pasar el cursor */}
+    <button 
+      onClick={() => setIsFaqOpen(true)}
+      className="group flex items-center gap-2 text-[#D4AF37] cursor-pointer transition-all duration-300"
+    >
+      <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] italic border-b border-transparent group-hover:border-[#D4AF37]">
+        Preguntas Frecuentes & Marco Legal
+      </span>
+    </button>
+
+    {/* Créditos de Marca */}
+    <p className="text-slate-600 text-[11px] font-black uppercase italic tracking-[0.3em] opacity-50">
+      Tu Abogado Sin Fronteras • 2026
+    </p>
+    
+    {/* Indicador de Seguridad */}
+    <div className="flex items-center gap-1.5 opacity-30">
+      <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+      <span className="text-[9px] text-white font-bold uppercase tracking-widest">
+        Sistema Cifrado TASF-SECURE
+      </span>
+    </div>
+  </div>
+</footer>
+
+{/* RENDERIZADO DEL MODAL (Ponlo al final de todo el return) */}
+   <FaqModal isOpen={isFaqOpen} onClose={() => setIsFaqOpen(false)} />
       </div>
+      
     </main>
+    
   );
+  
 }

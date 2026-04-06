@@ -37,7 +37,9 @@ export function Paso5Solicitud({ navegarPaso }: PasoProps) {
             En los próximos minutos. Revise la <span className="text-[#D4AF37]">campanita dorada</span> arriba.
           </p>
         </div>
-
+        <p className="text-[#D4AF37]/80 text-[9px] mt-4 uppercase font-black tracking-widest italic text-center leading-relaxed max-w-xs mx-auto">
+        Tu abogado está analizando los detalles... Una vez que responda, activa tu expediente para desbloquear el <span className="text-[#D4AF37] underline">Canal Directo de WhatsApp</span> y asegurar tu cupo de atención.
+        </p>
         <button onClick={() => navegarPaso(1)} className="w-full p-5 bg-[#1a1a1a] text-white rounded-xl font-black text-xs tracking-widest shadow-xl uppercase italic hover:bg-black transition-all border-4 border-[#D4AF37]/30">
           VOLVER AL INICIO
         </button>

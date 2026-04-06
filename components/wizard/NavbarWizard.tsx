@@ -46,7 +46,7 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
               src="https://res.cloudinary.com/dqod8tmkq/image/upload/v1774956353/logo_tu_abogado_zmw6bx.png"
               alt="Logo Tu Abogado Sin Fronteras"
               // 🚀 Aumentamos el tamaño considerablemente. w-12 h-12 es el doble de antes.
-              className="w-20 h-20 object-contain" 
+              className="w-16 h-16 object-contain" 
             />
 
             <div className="flex flex-col text-left leading-none">

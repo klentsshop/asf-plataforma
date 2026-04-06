@@ -6,6 +6,7 @@ import { client } from "@/sanity/lib/client";
 import { useRouter } from "next/navigation";
 
 export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficial, cargando }: PasoProps) {
+  const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [errores, setErrores] = useState<{ cedula?: string; email?: string }>({});
   const [validando, setValidando] = useState(false);
   const router = useRouter();
@@ -116,14 +117,37 @@ export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficia
           })}
         </div>
 
+        {/* 🛡️ BLOQUE LEGAL OBLIGATORIO */}
+        <div className="flex flex-col items-center gap-4 mt-10 px-4">
+          <label className="flex items-start gap-3 cursor-pointer group text-left max-w-md">
+            <input 
+              type="checkbox" 
+              checked={aceptoTerminos}
+              onChange={(e) => setAceptoTerminos(e.target.checked)}
+              className="mt-1 w-5 h-5 accent-[#D4AF37] cursor-pointer"
+            />
+            <span className="text-[11px] text-slate-500 font-bold uppercase tracking-tighter leading-tight">
+              Confirmo que la información es real y acepto los{" "}
+              <button 
+                type="button"
+                onClick={() => (window as any).setIsFaqOpen?.(true)} 
+                className="text-[#D4AF37] font-black underline hover:opacity-80 transition-all"
+              >
+                Términos, Condiciones y Marco Legal
+              </button>
+              {" "}de Tu Abogado Sin Fronteras.
+            </span>
+          </label>
+        </div>
+
         {/* 🏛️ BOTÓN ÚNICO DORADO (Sin botón negro de escape) */}
         <button
-          disabled={cargando || validando || hayErroresBloqueantes}
+          disabled={cargando || validando || hayErroresBloqueantes || !aceptoTerminos}
           onClick={finalizarRegistroOficial}
           className={`w-full mt-12 p-6 rounded-2xl font-black text-sm tracking-[0.2em] uppercase transition-all italic flex items-center justify-center gap-3 shadow-2xl border-2 border-white ${
-            (cargando || validando || hayErroresBloqueantes)
+            (cargando || validando || hayErroresBloqueantes || !aceptoTerminos)
               ? "bg-slate-200 text-slate-400 cursor-not-allowed opacity-70" 
-              : "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] hover:scale-[1.02] active:scale-95 shadow-[#D4AF37]/40"
+              : "bg-gradient-to-r from-[#D4AF37] to-[#B8860B] text-[#1a1a1a] hover:scale-[1.02] active:scale-95 shadow-[#D4AF37]/40 shadow-xl"
           }`}
         >
           {cargando ? (

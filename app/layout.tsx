@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// IMPORTANTE: Importamos el componente Live que configuramos
 import { SanityLive } from "@/sanity/lib/live";
+// 🆕 IMPORTACIONES SEGURAS
+import { WhatsappFlotante } from "@/components/WhatsappFlotante"; 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const geistSans = Geist({ 
+  variable: "--font-geist-sans", 
+  subsets: ["latin"] 
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const geistMono = Geist_Mono({ 
+  variable: "--font-geist-mono", 
+  subsets: ["latin"] 
 });
 
 export const metadata: Metadata = {
@@ -19,11 +20,12 @@ export const metadata: Metadata = {
   description: "Servicios Jurídicos en Venezuela",
 };
 
-export default function RootLayout({
+export default async function RootLayout({ // 👈 1. AÑADIMOS 'async' (Es vital para leer cookies)
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
   return (
     <html lang="es" suppressHydrationWarning>
       <body
@@ -32,9 +34,8 @@ export default function RootLayout({
       >
         {children}
         
-        {/* ESTA ES LA PIEZA CLAVE: 
-          Permite que el "corazón" de la app lata en tiempo real.
-        */}
+      <WhatsappFlotante />
+
         <SanityLive />
       </body>
     </html>

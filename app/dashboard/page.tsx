@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Scale, Users, Clock, FileText, Search, KeyRound, LogOut, Loader2 } from "lucide-react";
+import { Scale, Users, Clock, FileText, Search, Landmark, KeyRound, LogOut, Loader2 } from "lucide-react";
 import { client } from "../../sanity/lib/client";
 
 // Importación de la regla de seguridad para el blindaje de la plataforma
@@ -26,6 +26,13 @@ export default function AbogadoDashboard() {
   const [mensajeLegal, setMensajeLegal] = useState("");
   const [ofertaMonto, setOfertaMonto] = useState("");
   const [abogadoInfo, setAbogadoInfo] = useState({ id: "", nombre: "", especialidad: "", ubicacion: "" });
+  const [datosBancarios, setDatosBancarios] = useState({ 
+  banco: "", 
+  tipoCuenta: "", 
+  numeroCuenta: "", 
+  titular: "", 
+  identificacion: "" 
+});
 
   // ---- 1. GESTIÓN DE SESIÓN ----
   useEffect(() => {
@@ -45,6 +52,9 @@ export default function AbogadoDashboard() {
             especialidad: perfil.especialidad,
             ubicacion: perfil.ubicacion
           });
+          if (perfil.datosBancarios) {
+           setDatosBancarios(perfil.datosBancarios);
+           }
         }
       } catch (error) {
         console.error("Error de sesión:", error);
@@ -186,6 +196,22 @@ export default function AbogadoDashboard() {
     }
   };
 
+  const guardarDatosBancarios = async () => {
+  setCargando(true);
+  try {
+    await client
+      .patch(abogadoInfo.id)
+      .set({ datosBancarios: datosBancarios })
+      .commit();
+    alert("🏦 Información financiera actualizada.");
+  } catch (error) {
+    console.error("Error guardando banco:", error);
+    alert("Error al guardar datos bancarios.");
+  } finally {
+    setCargando(false);
+  }
+};
+
   const cerrarSesion = () => {
     localStorage.clear();
     window.location.replace("/login-abogado");
@@ -240,6 +266,67 @@ export default function AbogadoDashboard() {
             />
           )}
           
+          {/* VISTA DE PAGOS Y DATOS BANCARIOS */}
+{vista === "pagos" && (
+  <div className="animate-in fade-in slide-in-from-bottom-10 duration-500 max-w-2xl mx-auto py-6">
+    <div className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border-4 border-[#D4AF37] relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -mr-16 -mt-16 blur-2xl" />
+      
+      <div className="flex items-center gap-4 mb-8">
+        <div className="w-12 h-12 bg-[#1a1a1a] text-[#D4AF37] rounded-full flex items-center justify-center border-2 border-[#D4AF37]">
+          <Scale size={24} />
+        </div>
+        <div>
+          <h2 className="text-2xl font-black text-[#1a1a1a] uppercase italic tracking-tighter">Datos de Cobro</h2>
+          <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest">Configuración de Honorarios Oficiales</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-5">
+        {[
+          { label: "Institución Bancaria", key: "banco", placeholder: "Ej: Banesco / Mercantil" },
+          { label: "Titular de la Cuenta", key: "titular", placeholder: "Nombre Completo" },
+          { label: "Cédula o RIF", key: "identificacion", placeholder: "V-00.000.000" },
+          { label: "Número de Cuenta (20 Dígitos)", key: "numeroCuenta", placeholder: "01XX XXXX XX XXXXXXXXXX" },
+        ].map((f) => (
+          <div key={f.key} className="relative group">
+            <label className="text-[9px] font-black text-slate-400 uppercase italic tracking-widest ml-2 mb-1 block">
+              {f.label}
+            </label>
+            <input
+              type="text"
+              placeholder={f.placeholder}
+              value={(datosBancarios as any)[f.key]}
+              onChange={(e) => setDatosBancarios({ ...datosBancarios, [f.key]: e.target.value })}
+              className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#D4AF37] transition-all font-bold text-xs text-slate-700 shadow-sm"
+            />
+          </div>
+        ))}
+
+        <div className="relative group">
+          <label className="text-[9px] font-black text-slate-400 uppercase italic tracking-widest ml-2 mb-1 block">Tipo de Cuenta</label>
+          <select
+            value={datosBancarios.tipoCuenta}
+            onChange={(e) => setDatosBancarios({ ...datosBancarios, tipoCuenta: e.target.value })}
+            className="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl outline-none focus:border-[#D4AF37] transition-all font-bold text-xs text-slate-700 shadow-sm appearance-none cursor-pointer"
+          >
+            <option value="">Seleccionar...</option>
+            <option value="Ahorros">Cuenta de Ahorros</option>
+            <option value="Corriente">Cuenta Corriente</option>
+          </select>
+        </div>
+
+        <button
+          onClick={guardarDatosBancarios}
+          disabled={cargando}
+          className="w-full mt-6 p-5 bg-[#1a1a1a] text-[#D4AF37] rounded-2xl font-black text-xs tracking-[0.2em] uppercase transition-all italic flex items-center justify-center gap-3 shadow-xl hover:scale-[1.02] active:scale-95 border-2 border-[#D4AF37]"
+        >
+          {cargando ? <Loader2 className="animate-spin" /> : "Actualizar Información Financiera"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
           {vista === "seguridad" && (
             <div className="animate-in fade-in slide-in-from-right-10 duration-500 max-w-2xl mx-auto">
               <SecuritySettings abogadoId={abogadoInfo.id} />
