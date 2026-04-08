@@ -71,12 +71,12 @@ export function MuroGestionCliente({ onSend, cargando, manejarArchivo, tieneArch
           
           <div className="space-y-4">
             <div className="flex flex-col">
-              <span className="text-[13px] md:text-[15px] text-white font-black italic leading-tight break-all block">Banco de Venezuela ( Cuenta corriente No. <br className="md:hidden" /> 01020215910000228578)</span>
+              <span className="text-[13px] md:text-[15px] text-white font-black italic leading-tight break-all block">Banco de Venezuela: (Cuenta corriente No. <br className="md:hidden" /> 01020215910000228578)</span>
               <span className="text-slate-400 text-[12px] md:text-[14px] font-medium tracking-tight ">Liz Pineda CI: 16268588</span>
             </div>
             
             <div className="flex flex-col">
-              <span className="text-[13px] md:text-[15px] text-white font-black italic leading-tight">Bancolombia (Cuenta de Ahorros No. 10800008109)</span>
+              <span className="text-[13px] md:text-[15px] text-white font-black italic leading-tight">Bancolombia: (Cuenta de Ahorros No. 10800008109)</span>
               <span className="text-slate-400 text-[12px] md:text-[14px] font-medium tracking-tight">Liz Pineda Pasaporte: 5005042972</span>
             </div>
           </div>

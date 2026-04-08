@@ -50,7 +50,7 @@ export function FaqModal({ isOpen, onClose }: FaqModalProps) {
                 <p className="font-bold text-[#D4AF37] uppercase text-[11px] mb-1">3. REGISTRO Y USO</p>
                 <ul className="list-disc pl-4 space-y-2">
                   <li>El acceso a la plataforma requiere registro previo de todos los usuarios.</li>
-                  <li>Para mantenerse informados del avance de los casos que le competen, deberán ingresar al respectivo panel con su usuario y contraseña, la cual será enviada automáticamente desde el dominio oficial: @tuabogadosinfronteras.com-gestion@tuabogadosinfronteras.com al correo insertado al registrarse en la plataforma.</li>
+                  <li className="break-all">Para mantenerse informados del avance de los casos que le competen, deberán ingresar al respectivo panel con su usuario y contraseña, la cual será enviada automáticamente desde el dominio oficial: @tuabogadosinfronteras.com - gestion@tuabogadosinfronteras.com al correo insertado al registrarse en la plataforma.</li>
                   <li>Sus contraseñas son privadas y "Tu Abogado Sin Fronteras" nunca le solicitará dicha información.</li>
                   <li>Cada usuario es responsable de mantener la confidencialidad de sus datos y credenciales.</li>
                 </ul>

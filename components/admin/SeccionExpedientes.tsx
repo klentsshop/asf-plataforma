@@ -67,7 +67,7 @@ export function SeccionExpedientes({ clientes, abogados }: any) {
                 {/* RELACIÓN CRUZADA Y ESTADÍSTICAS (Legibilidad Aumentada) */}
                 {subTab === 'clientes' ? (
                   <div className="mt-3 flex flex-col gap-2">
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest leading-none">{item.categoria}</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-widest leading-none">{item.categoria === "global" ? "LABORAL" : item.categoria === "gestiones" ? "ADMINISTRATIVO" : item.categoria}</p>
                     {item.nombreAbogadoAsignado ? (
                       <div className="flex items-center gap-2 bg-[#D4AF37]/10 px-3 py-1.5 rounded-lg border border-[#D4AF37]/20 w-fit">
                         <Scale size={14} className="text-[#D4AF37]" />

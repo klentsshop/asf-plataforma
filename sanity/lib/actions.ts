@@ -44,14 +44,6 @@ export const crearCasoAnonimo = async (datos: any) => {
       return { success: false, error: "Ubicación requerida para el matchmaker" };
     }
 
-    // LÓGICA DE MATCHMAKER — exact match
-    const queryMatch = `*[_type == "abogado" && especialidad == $esp && ubicacion == $loc && estatus == "aprobado"][0]{ _id }`;
-
-    const abogadoEncontrado = await client.fetch(queryMatch, { 
-      esp: categoria, 
-      loc: ubicacion
-    });
-
     // ---- GENERACIÓN DE EXPEDIENTE PREMIUM ----
     const sequential = await client.fetch(`count(*[_type == "caso"])`);
     const nuevaSecuencia = sequential + 1;
@@ -71,9 +63,7 @@ export const crearCasoAnonimo = async (datos: any) => {
       pagoValidado: false, // 🔥 Inicializado en falso
       codigoExpediente: codigoPremium,
       secuenciaExpediente: nuevaSecuencia,
-      abogadoAsignado: abogadoEncontrado 
-        ? { _type: 'reference', _ref: abogadoEncontrado._id }
-        : undefined,
+     abogadoAsignado: undefined,
       fechaCreacion: new Date().toISOString(),
     });
 

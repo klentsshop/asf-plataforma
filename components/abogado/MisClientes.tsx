@@ -44,7 +44,7 @@ export function MisClientes({ cargando, clientesActivos, manejarGestionar }: Mis
               </h4>
 
               <p className="text-[9px] md:text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-6">
-                {c.categoria} • ID: {c._id.substring(0, 6).toUpperCase()}
+                {c.categoria === "global" ? "LABORAL" : c.categoria === "gestiones" ? "ADMINISTRATIVO" : c.categoria} • ID: {c._id.substring(0, 6).toUpperCase()}
               </p>
 
               <div className="flex gap-3">

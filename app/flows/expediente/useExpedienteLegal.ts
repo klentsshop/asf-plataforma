@@ -34,7 +34,8 @@ export function useExpedienteLegal(
     if (casoActivo &&
         casoActivo.categoria === seleccion.categoria &&
         casoActivo.ubicacion === seleccion.ubicacion) {
-      return alert(`Ya tienes una consulta activa para ${seleccion.categoria}. Revisa la campana dorada.`);
+          const categoriaVisual = seleccion.categoria === "global" ? "LABORAL" : seleccion.categoria === "gestiones" ? "ADMINISTRATIVO" : seleccion.categoria;
+      return alert(`Ya tienes una consulta activa para ${categoriaVisual}. Revisa la campana dorada.`);
     }
 
     setCargando(true);
