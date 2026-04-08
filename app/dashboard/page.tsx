@@ -72,9 +72,20 @@ export default function AbogadoDashboard() {
         setCargando(true);
         if (vista === "bandeja") {
           const d = await client.fetch(
-            `*[_type == "caso" && estado == "analisis" && ((categoria == $esp && ubicacion == $ub) || abogadoAsignado._ref == $id) && !defined(respuestaAbogado)] | order(_createdAt desc)`,
-            { esp: abogadoInfo.especialidad, ub: abogadoInfo.ubicacion, id: abogadoInfo.id }
-          );
+  `*[_type == "caso" && 
+    estado == "analisis" && 
+    (
+      (!defined(abogadoAsignado) && categoria == $esp && ubicacion == $ub) || 
+      (abogadoAsignado._ref == $id)
+    ) && 
+    !defined(respuestaAbogado)
+  ] | order(_createdAt desc)`,
+  { 
+    esp: abogadoInfo.especialidad, 
+    ub: abogadoInfo.ubicacion, 
+    id: abogadoInfo.id 
+  }
+);
           setCasos(d);
         } else if (vista === "clientes") {
           const d = await client.fetch(
@@ -110,12 +121,45 @@ export default function AbogadoDashboard() {
   }, [vista, abogadoInfo]);
 
   // ---- 3. FUNCIONES DE GESTIÓN ----
-  const manejarGestionar = (s: any) => {
-    setCasoSeleccionado(s);
-    setVista("gestionar");
-    setOfertaMonto(s.presupuestoEstimado || "");
-  };
+  const manejarGestionar = async (s: any) => {
+    // 🛡️ Iniciamos el loader para que el abogado sepa que el sistema está validando el acceso
+    setCargando(true);
+    
+    try {
+      // 1. Verificación de "Asignación Fantasma" en tiempo real
+      const casoActualizado = await client.fetch(
+        `*[_id == $id][0]{ abogadoAsignado }`, 
+        { id: s._id }
+      );
 
+      // Si alguien ya lo tomó mientras yo lo veía en la lista, me detiene aquí
+      if (casoActualizado?.abogadoAsignado && casoActualizado.abogadoAsignado._ref !== abogadoInfo.id) {
+        alert("⚠️ Este expediente ya ha sido tomado por otro especialista para análisis.");
+        setVista("bandeja"); // Refresca la vista
+        return;
+      }
+
+      // 2. BLOQUEO OFICIAL: Si está libre, lo marcamos como nuestro en Sanity
+      await client.patch(s._id)
+        .set({ 
+          abogadoAsignado: { _type: 'reference', _ref: abogadoInfo.id },
+          actualizacion: `SISTEMA: El Abg. ${abogadoInfo.nombre} ha tomado el caso para análisis técnico.` 
+        })
+        .commit();
+
+      // 3. FLUJO ORIGINAL: Una vez bloqueado, entramos a la vista de gestión
+      setCasoSeleccionado(s);
+      setVista("gestionar");
+      setOfertaMonto(s.presupuestoEstimado || "");
+
+    } catch (error) {
+      console.error("Error crítico en el protocolo de bloqueo:", error);
+      alert("Error de conexión con el servidor legal.");
+    } finally {
+      // 🛡️ Quitamos el loader pase lo que pase
+      setCargando(false);
+    }
+  };
   const manejarCargaInstrumentoAbogado = async (e: any) => {
     const file = e.target.files?.[0];
     if (!file || !casoSeleccionado) return;
@@ -159,7 +203,11 @@ export default function AbogadoDashboard() {
           respuestaAbogado: statusInstitucional,
           actualizacion: statusInstitucional,
           notificacionPendiente: true,
-          presupuestoEstimado: ofertaMonto || casoSeleccionado.presupuestoEstimado
+          presupuestoEstimado: ofertaMonto || casoSeleccionado.presupuestoEstimado,
+          abogadoAsignado: { 
+            _type: 'reference', 
+            _ref: abogadoInfo.id 
+          }
         })
         .commit();
 
@@ -191,6 +239,27 @@ export default function AbogadoDashboard() {
     } catch (error) {
       console.error("Error al concluir:", error);
       alert("Error al cerrar el expediente.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const liberarCaso = async () => {
+    if (!casoSeleccionado) return;
+    
+    setCargando(true);
+    try {
+      await client.patch(casoSeleccionado._id)
+        .unset(['abogadoAsignado']) // Borra la referencia del abogado
+        .set({ actualizacion: "SISTEMA: El caso ha sido liberado por el especialista y está disponible nuevamente." })
+        .commit();
+
+      alert("Expediente liberado con éxito.");
+      setCasoSeleccionado(null);
+      setVista("bandeja"); // Regresamos a la lista general
+    } catch (error) {
+      console.error("Error al liberar caso:", error);
+      alert("Error técnico al intentar liberar el expediente.");
     } finally {
       setCargando(false);
     }
@@ -263,6 +332,7 @@ export default function AbogadoDashboard() {
               manejarCargaInstrumentoAbogado={manejarCargaInstrumentoAbogado}
               enviarActualizacionYPrecio={enviarActualizacionYPrecio}
               onConcluirCaso={concluirCasoLegal}
+              onLiberar={liberarCaso}
             />
           )}
           

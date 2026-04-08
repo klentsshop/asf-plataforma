@@ -259,17 +259,38 @@ export const caso = defineType({
     }),
   ],
 
-  preview: {
+ preview: {
     select: {
-      title: 'titulo',
-      subtitle: 'codigoExpediente',
-      estado: 'estado'
+      codigo: 'codigoExpediente',
+      categoria: 'categoria',
+      ubicacion: 'ubicacion',
+      estado: 'estado',
+      nombreCliente: 'cliente.nombre', 
     },
-    prepare({ title, subtitle, estado }) {
-      const Emojis: any = { analisis: '🟡', respondido: '🟠', gestion: '🔵', concluido: '🟢' };
+    prepare({ codigo, categoria, ubicacion, estado, nombreCliente }) {
+      const Emojis: any = { 
+        analisis: '🟡', 
+        respondido: '🟠', 
+        gestion: '🔵', 
+        concluido: '🟢' 
+      };
+
+      // 🔄 TRADUCTOR DE CATEGORÍAS (Para que en el Studio salga el nombre real)
+      const nombresBonitos: any = {
+        propiedades: 'Propiedades',
+        familias: 'Familias',
+        negocios: 'Negocios',
+        penal: 'Penal',
+        gestiones: 'Trámites',
+        global: 'Trabajadores' // 👈 AQUÍ convertimos "global" en "Trabajadores"
+      };
+
+      const catDisplay = nombresBonitos[categoria] || 'Rama Desconocida';
+      
       return {
-        title: `${Emojis[estado] || '⚪'} ${title || 'Nuevo Caso'}`,
-        subtitle: `Expediente: ${subtitle || 'Sin asignar'}`
+        // Ahora el título será: 🟡 Juan Pérez - Trabajadores
+        title: `${Emojis[estado] || '⚪'} ${nombreCliente || 'Cliente Nuevo'} - ${catDisplay}`,
+        subtitle: `Expediente: ${codigo || 'TASF-####'} | ${ubicacion || 'Sin Estado'}`
       }
     }
   }

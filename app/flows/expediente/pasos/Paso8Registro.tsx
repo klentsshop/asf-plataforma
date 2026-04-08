@@ -5,7 +5,10 @@ import { PasoProps } from "../expediente.types";
 import { client } from "@/sanity/lib/client";
 import { useRouter } from "next/navigation";
 
-export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficial, cargando }: PasoProps) {
+interface Paso8Props extends PasoProps {
+  abrirFaq: () => void;
+}
+export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficial, cargando, abrirFaq}: Paso8Props) {
   const [aceptoTerminos, setAceptoTerminos] = useState(false);
   const [errores, setErrores] = useState<{ cedula?: string; email?: string }>({});
   const [validando, setValidando] = useState(false);
@@ -130,7 +133,7 @@ export function Paso8Registro({ seleccion, setSeleccion, finalizarRegistroOficia
               Confirmo que la información es real y acepto los{" "}
               <button 
                 type="button"
-                onClick={() => (window as any).setIsFaqOpen?.(true)} 
+                onClick={() => abrirFaq()} 
                 className="text-[#D4AF37] font-black underline hover:opacity-80 transition-all"
               >
                 Términos, Condiciones y Marco Legal

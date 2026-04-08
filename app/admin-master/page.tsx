@@ -53,7 +53,11 @@ export default function AdminMaster() {
       const expedientesClientesQuery = `*[_type == "caso"] | order(_createdAt desc){
   _id,
   "nombreCliente": cliente->nombre,
-  categoria,
+  "categoria": select(
+    categoria == "global" => "LABORAL",
+    categoria == "gestiones" => "ADMINISTRATIVO",
+    categoria
+  ),
   estado,
   // ESTO TRAE EL NOMBRE DEL ABOGADO ASIGNADO AL CASO
   "nombreAbogadoAsignado": abogadoAsignado->nombre,
@@ -433,7 +437,8 @@ export default function AdminMaster() {
             {casosHuerfanos.map((caso) => ( 
               <div key={caso._id} className="bg-white p-12 rounded-[5rem] border-4 border-[#D4AF37] shadow-2xl text-left flex flex-col gap-8 transition-all relative overflow-hidden">
                 <div className="flex justify-between items-center text-left">
-                  <span className="text-[10px] font-black bg-[#1a1a1a] text-[#D4AF37] px-6 py-3 rounded-full uppercase italic tracking-widest border-2 border-[#D4AF37]">{caso.categoria}</span>
+                  <span className="text-[10px] font-black bg-[#1a1a1a] text-[#D4AF37] px-6 py-3 rounded-full uppercase italic tracking-widest border-2 border-[#D4AF37]">
+                  {caso.categoria === "global" ? "LABORAL" : caso.categoria === "gestiones" ? "ADMINISTRATIVO" : caso.categoria}</span>
                   <span className="text-[10px] text-slate-400 font-black uppercase italic tracking-widest">{caso.ubicacion}</span>
                 </div>
                 

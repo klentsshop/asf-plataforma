@@ -33,35 +33,44 @@ export function NavbarWizard({ notificacion, navegarPaso, menuMovil, setMenuMovi
 
   return (
     <>
-      {/* NAV PRINCIPAL */}
-      <nav className="bg-[#1a1a1a] h-20 flex items-center z-[60] sticky top-0 border-b-4 border-[#D4AF37] shadow-2xl">
-        <div className="container mx-auto px-6 lg:px-8 flex justify-between items-center text-left">
+     {/* NAV PRINCIPAL */}
+<nav className="bg-[#1a1a1a] h-20 flex items-center z-[60] sticky top-0 border-b-4 border-[#D4AF37] shadow-2xl">
+  <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center h-full relative">
 
-          {/* LOGO */}
-          <div 
-            className="flex items-center gap-3 cursor-pointer"
-            onClick={() => navegarPaso(1)}
-          >
-            <img 
-              src="https://res.cloudinary.com/dqod8tmkq/image/upload/v1774956353/logo_tu_abogado_zmw6bx.png"
-              alt="Logo Tu Abogado Sin Fronteras"
-              // 🚀 Aumentamos el tamaño considerablemente. w-12 h-12 es el doble de antes.
-              className="w-16 h-16 object-contain" 
-            />
+    {/* LOGO Y BLOQUE DE TEXTO */}
+    <div 
+      className="flex items-center gap-3 cursor-pointer h-full py-1" 
+      onClick={() => navegarPaso(1)}
+    >
+      <img 
+        src="https://res.cloudinary.com/dqod8tmkq/image/upload/v1774956353/logo_tu_abogado_zmw6bx.png"
+        alt="Logo Tu Abogado Sin Fronteras"
+        className="w-12 h-12 sm:w-14 lg:w-16 object-contain flex-shrink-0" 
+      />
 
-            <div className="flex flex-col text-left leading-none">
-              <span className="font-black uppercase italic text-white tracking-tight text-xl sm:text-2xl lg:text-4xl">
-                Tu Abogado <span className="text-[#D4AF37]">Sin Fronteras</span>
-              </span>
-              <span className="text-[8px] sm:text-[9px] lg:text-[11px] font-bold text-[#D4AF37] tracking-[0.4em] uppercase italic opacity-90 mt-1">
-                Venezuela cerca de Ti
-              </span>
-            </div>
+      {/* CONTENEDOR DE TEXTO: Aquí sucede la magia */}
+      <div className="flex flex-col justify-center relative min-w-0">
+        
+        {/* TÍTULO: 3 Líneas en móvil (flex-col) / 1 Línea en PC (lg:flex-row) */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:gap-2 font-black uppercase italic text-white tracking-tighter leading-[0.8] lg:leading-none text-[16px] sm:text-xl lg:text-3xl">
+          <div className="flex gap-1.5 lg:gap-2">
+            <span>Tu</span>
+            <span>Abogado</span>
           </div>
+          <span className="text-[#D4AF37]">Sin Fronteras</span>
+        </div>
 
-          {/* RIGHT */}
-          <div className="flex items-center gap-4 lg:gap-6">
+        {/* ESLOGAN: Anclado al texto, flotando bajo la línea amarilla en móvil */}
+        <div className="absolute -bottom-5 lg:static lg:mt-1 whitespace-nowrap">
+          <span className="text-[7px] sm:text-[9px] lg:text-[11px] font-bold text-[#D4AF37] tracking-[0.2em] lg:tracking-[0.4em] uppercase italic opacity-90">
+            Venezuela cerca de Ti
+          </span>
+        </div>
+      </div>
+    </div>
 
+    {/* ACCIONES (DERECHA) */}
+    <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {/* CAMPANA */}
             <button
               onClick={() => notificacion.activa && navegarPaso(7)}

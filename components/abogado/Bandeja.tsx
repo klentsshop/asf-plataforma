@@ -12,9 +12,9 @@ export function Bandeja({ cargando, casos, manejarGestionar }: BandejaProps) {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
       <h1 className="text-4xl font-black text-[#1a1a1a] tracking-tighter uppercase italic leading-none mb-8">
-        Casos por aceptar <span className="text-[#D4AF37]"></span>
+        Casos <span className="text-[#D4AF37] inline-block">por aceptar</span>
       </h1>
-
+     
       {cargando ? (
         /* LOADER */
         <div className="flex flex-col items-center justify-center py-24 gap-4">

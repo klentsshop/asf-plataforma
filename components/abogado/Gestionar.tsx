@@ -19,6 +19,7 @@ type Props = {
   manejarCargaInstrumentoAbogado: (e: any) => void;
   enviarActualizacionYPrecio: () => void;
   onConcluirCaso: () => void;
+  onLiberar: () => void;
 };
 
 export function Gestionar(props: Props) {
@@ -32,7 +33,8 @@ export function Gestionar(props: Props) {
     cargando,
     manejarCargaInstrumentoAbogado,
     enviarActualizacionYPrecio,
-    onConcluirCaso
+    onConcluirCaso,
+    onLiberar
   } = props;
 
   const esConcluido = casoSeleccionado?.estado === 'concluido';
@@ -40,7 +42,7 @@ export function Gestionar(props: Props) {
   return (
     <div className="animate-in fade-in zoom-in-95 duration-500 space-y-6 pb-20">
       {/* 1. CABECERA */}
-      <GestionarHeader casoSeleccionado={casoSeleccionado} setVista={setVista} />
+      <GestionarHeader casoSeleccionado={casoSeleccionado} setVista={setVista} onLiberar={onLiberar} />
 
       {/* 2. GRILLA DINÁMICA */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">

@@ -16,8 +16,8 @@ export function FaqModal({ isOpen, onClose }: FaqModalProps) {
         {/* Cabecera del Modal */}
         <div className="flex justify-between items-center mb-6 border-b pb-4">
           <div>
-            <h3 className="text-2xl font-black text-[#00244C] italic uppercase tracking-tighter">Centro de Asistencia</h3>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tu Abogado Sin Fronteras • FAQ & Legal</p>
+            <h3 className="text-2xl font-black text-[#D4AF37] italic uppercase tracking-tighter">Términos y Condiciones</h3>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tu Abogado Sin Fronteras •Legal</p>
           </div>
           <button 
             onClick={onClose} 
@@ -28,48 +28,9 @@ export function FaqModal({ isOpen, onClose }: FaqModalProps) {
         </div>
 
         {/* Contenido con Scroll */}
-        <div className="space-y-4 overflow-y-auto pr-4 custom-scrollbar">
-        {/* SECCIÓN FAQ */}
-          <div className="mb-8">
-            <h4 className="flex items-center gap-2 text-[#D4AF37] font-black text-xs uppercase mb-4 tracking-widest">
-              <HelpCircle size={14} /> Preguntas Frecuentes
-            </h4>
-            
-            <details className="group border-b border-slate-100 pb-3">
-              <summary className="font-bold cursor-pointer py-2 text-slate-700 hover:text-[#D4AF37] transition-all list-none flex justify-between items-center">
-                ¿CÓMO INICIO MI PROCESO LEGAL?
-                <span className="group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <p className="mt-2 text-sm text-slate-500 pl-2 leading-relaxed italic">
-                Selecciona la categoría de tu caso, describe tu situación (puedes usar audio) y nuestro sistema asignará automáticamente al abogado especialista en Venezuela más apto para tu defensa.
-              </p>
-            </details>
-            <details className="group border-b border-slate-100 pb-3">
-              <summary className="font-bold cursor-pointer py-2 text-slate-700 hover:text-[#D4AF37] transition-all list-none flex justify-between items-center">
-                ¿DÓNDE VEO LA RESPUESTA A MI CONSULTA?
-                <span className="group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <p className="mt-2 text-sm text-slate-500 pl-2 leading-relaxed italic border-l-2 border-[#D4AF37]/30">
-                Podrás visualizar la respuesta a tu consulta haciendo clic en la campanita dorada superior de tu panel principal, una vez hayas completado la información detallada de la consulta.
-              </p>
-            </details>
-            <details className="group border-b border-slate-100 pb-3">
-              <summary className="font-bold cursor-pointer py-2 text-slate-700 hover:text-[#D4AF37] transition-all list-none flex justify-between items-center">
-                ¿ES SEGURO PAGAR POR LA PLATAFORMA?
-                <span className="group-open:rotate-180 transition-transform">▼</span>
-              </summary>
-              <p className="mt-2 text-sm text-slate-500 pl-2 leading-relaxed italic">
-                Totalmente. TASF funciona bajo un sistema de custodia. El pago se retiene y solo se libera al abogado una vez que tú confirmes que el servicio fue entregado satisfactoriamente.
-              </p>
-            </details>
-          </div>
-          
+        <div className="space-y-4 overflow-y-auto pr-4 custom-scrollbar text-center">
           {/* SECCIÓN LEGAL (Transcripción íntegra) */}
-          <section>
-            <h4 className="flex items-center gap-2 text-[#D4AF37] font-black text-xs uppercase mb-6 tracking-widest">
-              <ShieldCheck size={14} /> Términos y Condiciones 
-            </h4>
-            
+          <section className="text-center">    
             <div className="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-200 font-serif text-[13px] md:text-[14px] text-slate-700 leading-relaxed space-y-6">
               
               <h5 className="font-black text-center text-[#00244C] border-b pb-2 uppercase tracking-tighter">TÉRMINOS Y CONDICIONES DE "TU ABOGADO SIN FRONTERAS"</h5>
@@ -89,7 +50,7 @@ export function FaqModal({ isOpen, onClose }: FaqModalProps) {
                 <p className="font-bold text-[#D4AF37] uppercase text-[11px] mb-1">3. REGISTRO Y USO</p>
                 <ul className="list-disc pl-4 space-y-2">
                   <li>El acceso a la plataforma requiere registro previo de todos los usuarios.</li>
-                  <li>Para mantenerse informados del avance de los casos que le competen, deberán ingresar al respectivo panel con su usuario y contraseña, la cual será enviada automáticamente desde el dominio oficial: @tuabogadosinfronteras.com - gestion@tuabogadosinfronteras.com al correo insertado al registrarse en la plataforma.</li>
+                  <li>Para mantenerse informados del avance de los casos que le competen, deberán ingresar al respectivo panel con su usuario y contraseña, la cual será enviada automáticamente desde el dominio oficial: @tuabogadosinfronteras.com-gestion@tuabogadosinfronteras.com al correo insertado al registrarse en la plataforma.</li>
                   <li>Sus contraseñas son privadas y "Tu Abogado Sin Fronteras" nunca le solicitará dicha información.</li>
                   <li>Cada usuario es responsable de mantener la confidencialidad de sus datos y credenciales.</li>
                 </ul>
@@ -107,7 +68,7 @@ export function FaqModal({ isOpen, onClose }: FaqModalProps) {
               <div>
                 <p className="font-bold text-[#D4AF37] uppercase text-[11px] mb-1">5. PAGOS Y GARANTÍAS</p>
                 <div className="space-y-3">
-                  <p><strong>5.1 Forma y condiciones de pago:</strong> Los pagos por los servicios profesionales, deben realizarse exclusivamente a las cuentas bancarias proporcionadas automáticamente por la plataforma*.</p>
+                  <p><strong>5.1 Forma y condiciones de pago:</strong> Los pagos por los servicios profesionales, deben realizarse exclusivamente a las cuentas bancarias proporcionadas automáticamente por la plataforma.</p>
                   <ul className="list-disc pl-4 space-y-1">
                     <li>Al solicitar un servicio y ser analizado por un abogado del equipo TASF, el cliente recibirá un correo electrónico con los datos de cuentas bancarias autorizadas, enviado desde el dominio oficial: @tuabogadosinfronteras.com.</li>
                     <li>Es responsabilidad exclusiva del cliente verificar que el correo provenga de dicho dominio, antes de efectuar cualquier transferencia o pago.</li>
@@ -115,7 +76,7 @@ export function FaqModal({ isOpen, onClose }: FaqModalProps) {
                     <li>Los abogados no están autorizados a recibir pagos directos de los clientes, siendo la administración de la plataforma la única encargada de recibir los pagos de los clientes y de liberar posteriormente el pago a los abogados por sus honorarios en el tiempo establecido.</li>
                     <li>Una vez recibido y validado el pago por la administración de esta plataforma, se cambiará automáticamente la fase o estado del caso, tanto en el panel del cliente, como en el panel profesional del abogado que aceptó y analizó el caso, dando inicio al proceso para la resolución de la situación jurídica en cuestión.</li>
                   </ul>
-                  <p><strong>5.2 Envío de datos bancarios por parte de los abogados:</strong> Los abogados que acepten y resuelvan casos asignados por esta plataforma, deberán enviar los datos de sus cuentas bancarias, única y exclusivamente a la dirección de correo electrónico suministrada por la administración de "Tu Abogado Sin Fronteras".</p>
+                  <p><strong>5.2 Envío de datos bancarios por parte de los abogados:</strong> Los abogados que acepten y resuelvan casos asignados por esta plataforma, deberán diligenciar los datos de su cuenta bancaria personal, única y exclusivamente en su panel profesional.</p>
                   <ul className="list-disc pl-4 space-y-1">
                     <li>Esta información será utilizada por la plataforma únicamente para realizar el pago correspondiente por los servicios profesionales prestados.</li>
                     </ul>

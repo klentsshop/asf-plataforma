@@ -34,7 +34,7 @@ export function Paso7Propuesta({ notificacion, navegarPaso, casoIdGenerado }: Pa
                 <MessageCircle size={10} className="text-[#D4AF37]" />
               </div>
               <p className="text-[10px] text-slate-600 font-bold uppercase italic leading-tight tracking-tight">
-                <span className="text-[#00244C]">Canal Directo:</span> Desbloquea el botón de WhatsApp para aclarar dudas con tu abogado.
+                <span className="text-[#00244C]">Canal Directo:</span> Desbloquea el botón de WhatsApp para aclarar dudas antes de continuar el proceso.
               </p>
             </li>
             <li className="flex items-start gap-3">
@@ -42,7 +42,7 @@ export function Paso7Propuesta({ notificacion, navegarPaso, casoIdGenerado }: Pa
                 <CheckCircle2 size={10} className="text-[#D4AF37]" />
               </div>
               <p className="text-[10px] text-slate-600 font-bold uppercase italic leading-tight tracking-tight">
-                <span className="text-[#00244C]">Bóveda TASF:</span> Recibe y descarga tus documentos legales en un entorno cifrado.
+                <span className="text-[#00244C]">Privacidad de Caso:</span> Recibe y descarga tus documentos legales en un entorno cifrado.
               </p>
             </li>
             <li className="flex items-start gap-3">

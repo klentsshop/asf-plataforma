@@ -249,6 +249,7 @@ export default function Page() {
               <Paso8Registro 
                 {...commonProps} 
                 finalizarRegistroOficial={finalizarRegistroOficial} 
+                abrirFaq={() => setIsFaqOpen(true)}
               />
             )}
           </div>
